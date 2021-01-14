@@ -3,9 +3,7 @@ project('raylib-meson', 'c', 'cpp', 'd')
 cc = meson.get_compiler('c')
 dc = meson.get_compiler('d')
 
-d_args = []
 link_args = []
-name_suffix = []
 dependencies = []
 
 # Raylib configuration
@@ -20,6 +18,7 @@ raylib_opts.add_cmake_defines({
 raylib_subproject = cmake.subproject('raylib', options: raylib_opts)
 dependencies += raylib_subproject.dependency('raylib_static')
 
+# D subprojects
 betterclist = subproject('betterclist')
 bettercmath = subproject('bettercmath')
 flyweightbyid = subproject('flyweightbyid')
@@ -47,11 +46,6 @@ elif host_machine.system() == 'emscripten'
     '-s', 'ENVIRONMENT=web',
     '-s', 'USE_GLFW=3',
   ]
-  d_args += ['--mtriple=wasm32', '--output-bc']
-endif
-
-if dc.get_id() == 'llvm'
-  d_args += '-betterC'
 endif
 
 # Project files
@@ -69,13 +63,4 @@ gargula_dep = declare_dependency(
   include_directories: inc_dir,
   link_args: link_args,
   dependencies: dependencies,
-)
-
-executable('empty',
-  'source/app.d',
-  dependencies: gargula_dep,
-  include_directories: 'libs/druntime/src',
-  d_args: d_args,
-  name_suffix: meson.get_external_property('name_suffix', []),
-  link_language: meson.get_external_property('link_language', 'd'),
 )
