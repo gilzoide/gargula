@@ -36,6 +36,8 @@ struct Game(size_t N = 1024)
     int targetFPS = 60;
     /// Initial window title
     string title = "Title";
+    /// Clear color
+    Color clearColor = RAYWHITE;
 
     /// Dynamic list of game objects
     private List!(GameObject, N) objects;
@@ -52,13 +54,15 @@ struct Game(size_t N = 1024)
         loopFrame();
     }
 
-    private static void frame(Game* game)
+    private void frame()
     {
         immutable float delta = GetFrameTime();
         BeginDrawing();
+
+        ClearBackground(clearColor);
         debug DrawFPS(0, 0);
 
-        foreach (o; game.objects)
+        foreach (o; objects)
         {
             o.frame(delta);
         }
@@ -68,9 +72,13 @@ struct Game(size_t N = 1024)
 
     version (WebAssembly)
     {
+        private static void callFrame(Game* game)
+        {
+            game.frame();
+        }
         private void loopFrame()
         {
-            emscripten_set_main_loop_arg(cast(loop_func) &Game.frame, &this, 0, 1);
+            emscripten_set_main_loop_arg(cast(loop_func) &Game.callFrame, &this, 0, 1);
         }
     }
     else
@@ -79,7 +87,7 @@ struct Game(size_t N = 1024)
         {
             while (!WindowShouldClose())
             {
-                frame(&this);
+                frame();
             }
         }
     }
