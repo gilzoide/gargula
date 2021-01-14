@@ -20,6 +20,16 @@ raylib_opts.add_cmake_defines({
 raylib_subproject = cmake.subproject('raylib', options: raylib_opts)
 dependencies += raylib_subproject.dependency('raylib_static')
 
+betterclist = subproject('betterclist')
+bettercmath = subproject('bettercmath')
+flyweightbyid = subproject('flyweightbyid')
+
+dependencies += [
+  betterclist.get_variable('betterclist_dep'),
+  bettercmath.get_variable('bettercmath_dep'),
+  flyweightbyid.get_variable('flyweightbyid_dep'),
+]
+
 # General configuration
 if host_machine.system() == 'windows'
   dependencies += [

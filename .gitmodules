@@ -5,3 +5,12 @@
 [submodule "subprojects/raylib"]
 	path = subprojects/raylib
 	url = https://github.com/raysan5/raylib.git
+[submodule "subprojects/bettercmath"]
+	path = subprojects/bettercmath
+	url = https://github.com/gilzoide/bettercmath.git
+[submodule "subprojects/betterclist"]
+	path = subprojects/betterclist
+	url = https://github.com/gilzoide/betterclist.git
+[submodule "subprojects/flyweightbyid"]
+	path = subprojects/flyweightbyid
+	url = https://github.com/gilzoide/flyweightbyid.git
