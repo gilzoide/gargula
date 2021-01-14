@@ -1,20 +1,33 @@
 #!/bin/sh
 
 script_root=$(dirname $(realpath $0))
+project_root="$script_root/.."
 
-raylib_h="$script_root/../subprojects/raylib/src/raylib.h"
+raylib_h="$project_root/subprojects/raylib/src/raylib.h"
 
-pushd $script_root
+pushd $project_root
 
-dstep --alias-enum-members "$raylib_h" -o d_wrappers/raylib.d
-# Fix anonymous enum aliases like "alias SAPP_MAX_TOUCHPOINTS = .SAPP_MAX_TOUCHPOINTS;"
-#sed -i '/alias \w* = \.\w*;/d' d_wrappers/*.d
+dstep --alias-enum-members "$raylib_h" -o libs/d_wrappers/raylib.d
+
+sedscript='
+# Import bettercmath and replace Vector*, Matrix and Color definitions
+/^import core.stdc.stdarg;/a import bettercmath.vector : _Vector = Vector;\nimport bettercmath.matrix : _Matrix = Matrix;
+/^struct Vector2/,/^}/c alias Vector2 = _Vector!(float, 2);
+/^struct Vector3/,/^}/c alias Vector3 = _Vector!(float, 3);
+/^struct Vector4/,/^}/c alias Vector4 = _Vector!(float, 4);
+/^struct Matrix/,/^}/c  alias Matrix = _Matrix!(float, 4);
+/^struct Color/,/^}/c   alias Color = _Vector!(ubyte, 4);
 
 # Fix initial float values as 0 instead of NaN
-sed -i -E 's/^(\s+float[^*][^;]+);/\1 = 0;/g' d_wrappers/*.d
+s/^(\s+float[^*][^;]+);/\1 = 0;/g
+
 # Fix initial value for Camera2D.zoom
-sed -i -E 's/float zoom = 0;/float zoom = 1;/g' d_wrappers/*.d
+s/float zoom = 0;/float zoom = 1;/g
+
 # Fix "Temporal hack" aliases
-sed -i -E 's/^enum (\w+ = \w+;)/alias \1/g' d_wrappers/*.d
+s/^enum (\w+ = \w+;)/alias \1/g
+'
+
+sed -i -E "$sedscript" libs/d_wrappers/raylib.d
 
 popd

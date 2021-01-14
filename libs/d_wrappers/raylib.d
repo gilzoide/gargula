@@ -52,7 +52,7 @@
 *   raylib is licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software:
 *
-*   Copyright (c) 2013-2021 Ramon Santamaria (@raysan5)
+*   Copyright (c) 2013-2020 Ramon Santamaria (@raysan5)
 *
 *   This software is provided "as-is", without any express or implied warranty. In no event
 *   will the authors be held liable for any damages arising from the use of this software.
@@ -73,6 +73,8 @@
 
 import core.stdc.config;
 import core.stdc.stdarg;
+import bettercmath.vector : _Vector = Vector;
+import bettercmath.matrix : _Matrix = Matrix;
 
 extern (C):
 
@@ -130,61 +132,22 @@ alias GetImageData = LoadImageColors;
 // Boolean type
 
 // Vector2 type
-struct Vector2
-{
-    float x = 0;
-    float y = 0;
-}
+alias Vector2 = _Vector!(float, 2);
 
 // Vector3 type
-struct Vector3
-{
-    float x = 0;
-    float y = 0;
-    float z = 0;
-}
+alias Vector3 = _Vector!(float, 3);
 
 // Vector4 type
-struct Vector4
-{
-    float x = 0;
-    float y = 0;
-    float z = 0;
-    float w = 0;
-}
+alias Vector4 = _Vector!(float, 4);
 
 // Quaternion type, same as Vector4
 alias Quaternion = Vector4;
 
 // Matrix type (OpenGL style 4x4 - right handed, column major)
-struct Matrix
-{
-    float m0 = 0;
-    float m4 = 0;
-    float m8 = 0;
-    float m12 = 0;
-    float m1 = 0;
-    float m5 = 0;
-    float m9 = 0;
-    float m13 = 0;
-    float m2 = 0;
-    float m6 = 0;
-    float m10 = 0;
-    float m14 = 0;
-    float m3 = 0;
-    float m7 = 0;
-    float m11 = 0;
-    float m15 = 0;
-}
+alias Matrix = _Matrix!(float, 4);
 
 // Color type, RGBA (32bit)
-struct Color
-{
-    ubyte r;
-    ubyte g;
-    ubyte b;
-    ubyte a;
-}
+alias Color = _Vector!(ubyte, 4);
 
 // Rectangle type
 struct Rectangle
@@ -1245,7 +1208,6 @@ void* GetWindowHandle (); // Get native window handle
 int GetScreenWidth (); // Get current screen width
 int GetScreenHeight (); // Get current screen height
 int GetMonitorCount (); // Get number of connected monitors
-int GetCurrentMonitor (); // Get current connected monitor
 Vector2 GetMonitorPosition (int monitor); // Get specified monitor position
 int GetMonitorWidth (int monitor); // Get specified monitor width
 int GetMonitorHeight (int monitor); // Get specified monitor height
@@ -1420,7 +1382,6 @@ void DrawLine (int startPosX, int startPosY, int endPosX, int endPosY, Color col
 void DrawLineV (Vector2 startPos, Vector2 endPos, Color color); // Draw a line (Vector version)
 void DrawLineEx (Vector2 startPos, Vector2 endPos, float thick, Color color); // Draw a line defining thickness
 void DrawLineBezier (Vector2 startPos, Vector2 endPos, float thick, Color color); // Draw a line using cubic-bezier curves in-out
-void DrawLineBezierQuad (Vector2 startPos, Vector2 endPos, Vector2 controlPos, float thick, Color color); //Draw line using quadratic bezier curves with a control point
 void DrawLineStrip (Vector2* points, int pointsCount, Color color); // Draw lines sequence
 void DrawCircle (int centerX, int centerY, float radius, Color color); // Draw a color-filled circle
 void DrawCircleSector (Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color); // Draw a piece of a circle
