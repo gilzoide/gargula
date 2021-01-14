@@ -1,14 +1,17 @@
 module gargula.game;
 
 import betterclist;
-import raylib;
+
+import gargula.wrapper.raylib;
 
 extern(C):
 
 version (WebAssembly)
 {
     alias loop_func = void function(void*);
+    ///
     void emscripten_set_main_loop_arg(loop_func, void*, int, int);
+    ///
     void __assert(const char* message, const char* file, int line)
     {
         import core.stdc.stdio : printf;
@@ -25,13 +28,19 @@ private struct GameObject
 
 struct Game(size_t N = 1024)
 {
+    /// Initial window width
     int width = 800;
+    /// Initial window height
     int height = 600;
+    /// Target number of Frames per Second
     int targetFPS = 60;
+    /// Initial window title
     string title = "Title";
 
+    /// Dynamic list of game objects
     private List!(GameObject, N) objects;
 
+    /// Run main loop
     void run()
     {
         InitWindow(width, height, cast(const char*) title);
@@ -40,15 +49,16 @@ struct Game(size_t N = 1024)
         {
             CloseWindow();
         }
-        loopFrame(&this);
+        loopFrame();
     }
 
-    private void frame()
+    private static void frame(Game* game)
     {
         immutable float delta = GetFrameTime();
         BeginDrawing();
+        debug DrawFPS(0, 0);
 
-        foreach (o; objects)
+        foreach (o; game.objects)
         {
             o.frame(delta);
         }
@@ -58,18 +68,18 @@ struct Game(size_t N = 1024)
 
     version (WebAssembly)
     {
-        private static void loopFrame(Game* game)
+        private void loopFrame()
         {
-            emscripten_set_main_loop_arg(cast(loop_func) &Game.frame, game, 0, 1);
+            emscripten_set_main_loop_arg(cast(loop_func) &Game.frame, &this, 0, 1);
         }
     }
     else
     {
-        private static void loopFrame(Game* game)
+        private void loopFrame()
         {
             while (!WindowShouldClose())
             {
-                game.frame();
+                frame(&this);
             }
         }
     }

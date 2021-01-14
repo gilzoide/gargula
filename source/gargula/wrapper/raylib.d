@@ -1,3 +1,5 @@
+module gargula.wrapper.raylib;
+
 /**********************************************************************************************
 *
 *   raylib - A simple and easy-to-use library to enjoy videogames programming (www.raylib.com)

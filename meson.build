@@ -57,8 +57,6 @@ endif
 # Project files
 inc_dir = include_directories(
   'source',
-  'libs/d_wrappers',
-  'libs/druntime/src',
 )
 
 sources = files(
@@ -76,6 +74,7 @@ gargula_dep = declare_dependency(
 executable('empty',
   'source/app.d',
   dependencies: gargula_dep,
+  include_directories: 'libs/druntime/src',
   d_args: d_args,
   name_suffix: meson.get_external_property('name_suffix', []),
   link_language: meson.get_external_property('link_language', 'd'),
