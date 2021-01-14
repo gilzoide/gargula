@@ -1,9 +1,10 @@
-import gargula.run;
+import gargula;
 
 extern(C):
 
 void main()
 {
-    run();
+    Game!8 game;
+    game.run();
 }
 
