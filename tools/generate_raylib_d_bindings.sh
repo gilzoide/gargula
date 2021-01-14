@@ -8,12 +8,17 @@ raylib_d="$project_root/source/gargula/wrapper/raylib.d"
 
 pushd $project_root
 
-dstep --alias-enum-members "$raylib_h" -o "$raylib_d"
+dstep --package gargula.wrapper \
+    --skip RL_MALLOC \
+    --skip RL_CALLOC \
+    --skip RL_REALLOC \
+    --skip RL_FREE \
+    --skip CLITERAL \
+    "$raylib_h" -o "$raylib_d"
 
-sedscript='
-# Add module directive
-1i module gargula.wrapper.raylib;\n
+colors=$(sed -n -E '/CLITERAL\(Color\)/s/#define (\w+).+\{(.+)\}/enum Color \1 = [\2];  /p' "$raylib_h")
 
+sedscript=$(echo '
 # Import bettercmath and replace Vector*, Matrix and Color definitions
 /^import core.stdc.stdarg;/a import bettercmath.vector : _Vector = Vector;\nimport bettercmath.matrix : _Matrix = Matrix;
 /^struct Vector2/,/^}/c alias Vector2 = _Vector!(float, 2);
@@ -30,8 +35,11 @@ s/float zoom = 0;/float zoom = 1;/g
 
 # Fix "Temporal hack" aliases
 s/^enum (\w+ = \w+;)/alias \1/g
-'
 
-sed -i -E "$sedscript" "$raylib_d"
+# Add color constants
+/Some Basic Colors/r/dev/stdin
+')
+
+echo "$colors" | sed -i -E "$sedscript" "$raylib_d"
 
 popd

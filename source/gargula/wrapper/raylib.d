@@ -1,5 +1,3 @@
-module gargula.wrapper.raylib;
-
 /**********************************************************************************************
 *
 *   raylib - A simple and easy-to-use library to enjoy videogames programming (www.raylib.com)
@@ -73,6 +71,8 @@ module gargula.wrapper.raylib;
 *
 **********************************************************************************************/
 
+module gargula.wrapper.raylib;
+
 import core.stdc.config;
 import core.stdc.stdarg;
 import bettercmath.vector : _Vector = Vector;
@@ -101,23 +101,36 @@ enum RAD2DEG = 180.0f / PI;
 
 // Allow custom memory allocators
 
-alias RL_MALLOC = malloc;
-
-alias RL_CALLOC = calloc;
-
-alias RL_REALLOC = realloc;
-
-alias RL_FREE = free;
-
 // NOTE: MSC C++ compiler does not support compound literals (C99 feature)
 // Plain structures in C++ (without constructors) can be initialized from { } initializers.
 
-extern (D) auto CLITERAL(T)(auto ref T type)
-{
-    return type;
-}
-
 // Some Basic Colors
+enum Color LIGHTGRAY = [ 200, 200, 200, 255 ];     // Light Gray
+enum Color GRAY = [ 130, 130, 130, 255 ];     // Gray
+enum Color DARKGRAY = [ 80, 80, 80, 255 ];        // Dark Gray
+enum Color YELLOW = [ 253, 249, 0, 255 ];       // Yellow
+enum Color GOLD = [ 255, 203, 0, 255 ];       // Gold
+enum Color ORANGE = [ 255, 161, 0, 255 ];       // Orange
+enum Color PINK = [ 255, 109, 194, 255 ];     // Pink
+enum Color RED = [ 230, 41, 55, 255 ];       // Red
+enum Color MAROON = [ 190, 33, 55, 255 ];       // Maroon
+enum Color GREEN = [ 0, 228, 48, 255 ];        // Green
+enum Color LIME = [ 0, 158, 47, 255 ];        // Lime
+enum Color DARKGREEN = [ 0, 117, 44, 255 ];        // Dark Green
+enum Color SKYBLUE = [ 102, 191, 255, 255 ];     // Sky Blue
+enum Color BLUE = [ 0, 121, 241, 255 ];       // Blue
+enum Color DARKBLUE = [ 0, 82, 172, 255 ];        // Dark Blue
+enum Color PURPLE = [ 200, 122, 255, 255 ];     // Purple
+enum Color VIOLET = [ 135, 60, 190, 255 ];      // Violet
+enum Color DARKPURPLE = [ 112, 31, 126, 255 ];      // Dark Purple
+enum Color BEIGE = [ 211, 176, 131, 255 ];     // Beige
+enum Color BROWN = [ 127, 106, 79, 255 ];      // Brown
+enum Color DARKBROWN = [ 76, 63, 47, 255 ];        // Dark Brown
+enum Color WHITE = [ 255, 255, 255, 255 ];     // White
+enum Color BLACK = [ 0, 0, 0, 255 ];           // Black
+enum Color BLANK = [ 0, 0, 0, 0 ];             // Blank (Transparent)
+enum Color MAGENTA = [ 255, 0, 255, 255 ];       // Magenta
+enum Color RAYWHITE = [ 245, 245, 245, 255 ];     // My own White (raylib logo)
 // NOTE: Custom raylib color palette for amazing visuals on WHITE background // Light Gray // Gray // Dark Gray // Yellow // Gold // Orange // Pink // Red // Maroon // Green // Lime // Dark Green // Sky Blue // Blue // Dark Blue // Purple // Violet // Dark Purple // Beige // Brown // Dark Brown // White // Black // Blank (Transparent) // Magenta // My own White (raylib logo)
 
 // Temporal hack to avoid breaking old codebases using
@@ -449,21 +462,6 @@ enum ConfigFlag
     FLAG_INTERLACED_HINT = 0x00010000 // Set to try enabling interlaced video format (for V3D)
 }
 
-alias FLAG_VSYNC_HINT = .FLAG_VSYNC_HINT;
-alias FLAG_FULLSCREEN_MODE = .FLAG_FULLSCREEN_MODE;
-alias FLAG_WINDOW_RESIZABLE = .FLAG_WINDOW_RESIZABLE;
-alias FLAG_WINDOW_UNDECORATED = .FLAG_WINDOW_UNDECORATED;
-alias FLAG_WINDOW_HIDDEN = .FLAG_WINDOW_HIDDEN;
-alias FLAG_WINDOW_MINIMIZED = .FLAG_WINDOW_MINIMIZED;
-alias FLAG_WINDOW_MAXIMIZED = .FLAG_WINDOW_MAXIMIZED;
-alias FLAG_WINDOW_UNFOCUSED = .FLAG_WINDOW_UNFOCUSED;
-alias FLAG_WINDOW_TOPMOST = .FLAG_WINDOW_TOPMOST;
-alias FLAG_WINDOW_ALWAYS_RUN = .FLAG_WINDOW_ALWAYS_RUN;
-alias FLAG_WINDOW_TRANSPARENT = .FLAG_WINDOW_TRANSPARENT;
-alias FLAG_WINDOW_HIGHDPI = .FLAG_WINDOW_HIGHDPI;
-alias FLAG_MSAA_4X_HINT = .FLAG_MSAA_4X_HINT;
-alias FLAG_INTERLACED_HINT = .FLAG_INTERLACED_HINT;
-
 // Trace log type
 enum TraceLogType
 {
@@ -476,15 +474,6 @@ enum TraceLogType
     LOG_FATAL = 6,
     LOG_NONE = 7 // Disable logging
 }
-
-alias LOG_ALL = .LOG_ALL;
-alias LOG_TRACE = .LOG_TRACE;
-alias LOG_DEBUG = .LOG_DEBUG;
-alias LOG_INFO = .LOG_INFO;
-alias LOG_WARNING = .LOG_WARNING;
-alias LOG_ERROR = .LOG_ERROR;
-alias LOG_FATAL = .LOG_FATAL;
-alias LOG_NONE = .LOG_NONE;
 
 // Keyboard keys (US keyboard layout)
 // NOTE: Use GetKeyPressed() to allow redefining
@@ -603,112 +592,6 @@ enum KeyboardKey
     KEY_KP_EQUAL = 336
 }
 
-alias KEY_APOSTROPHE = .KEY_APOSTROPHE;
-alias KEY_COMMA = .KEY_COMMA;
-alias KEY_MINUS = .KEY_MINUS;
-alias KEY_PERIOD = .KEY_PERIOD;
-alias KEY_SLASH = .KEY_SLASH;
-alias KEY_ZERO = .KEY_ZERO;
-alias KEY_ONE = .KEY_ONE;
-alias KEY_TWO = .KEY_TWO;
-alias KEY_THREE = .KEY_THREE;
-alias KEY_FOUR = .KEY_FOUR;
-alias KEY_FIVE = .KEY_FIVE;
-alias KEY_SIX = .KEY_SIX;
-alias KEY_SEVEN = .KEY_SEVEN;
-alias KEY_EIGHT = .KEY_EIGHT;
-alias KEY_NINE = .KEY_NINE;
-alias KEY_SEMICOLON = .KEY_SEMICOLON;
-alias KEY_EQUAL = .KEY_EQUAL;
-alias KEY_A = .KEY_A;
-alias KEY_B = .KEY_B;
-alias KEY_C = .KEY_C;
-alias KEY_D = .KEY_D;
-alias KEY_E = .KEY_E;
-alias KEY_F = .KEY_F;
-alias KEY_G = .KEY_G;
-alias KEY_H = .KEY_H;
-alias KEY_I = .KEY_I;
-alias KEY_J = .KEY_J;
-alias KEY_K = .KEY_K;
-alias KEY_L = .KEY_L;
-alias KEY_M = .KEY_M;
-alias KEY_N = .KEY_N;
-alias KEY_O = .KEY_O;
-alias KEY_P = .KEY_P;
-alias KEY_Q = .KEY_Q;
-alias KEY_R = .KEY_R;
-alias KEY_S = .KEY_S;
-alias KEY_T = .KEY_T;
-alias KEY_U = .KEY_U;
-alias KEY_V = .KEY_V;
-alias KEY_W = .KEY_W;
-alias KEY_X = .KEY_X;
-alias KEY_Y = .KEY_Y;
-alias KEY_Z = .KEY_Z;
-alias KEY_SPACE = .KEY_SPACE;
-alias KEY_ESCAPE = .KEY_ESCAPE;
-alias KEY_ENTER = .KEY_ENTER;
-alias KEY_TAB = .KEY_TAB;
-alias KEY_BACKSPACE = .KEY_BACKSPACE;
-alias KEY_INSERT = .KEY_INSERT;
-alias KEY_DELETE = .KEY_DELETE;
-alias KEY_RIGHT = .KEY_RIGHT;
-alias KEY_LEFT = .KEY_LEFT;
-alias KEY_DOWN = .KEY_DOWN;
-alias KEY_UP = .KEY_UP;
-alias KEY_PAGE_UP = .KEY_PAGE_UP;
-alias KEY_PAGE_DOWN = .KEY_PAGE_DOWN;
-alias KEY_HOME = .KEY_HOME;
-alias KEY_END = .KEY_END;
-alias KEY_CAPS_LOCK = .KEY_CAPS_LOCK;
-alias KEY_SCROLL_LOCK = .KEY_SCROLL_LOCK;
-alias KEY_NUM_LOCK = .KEY_NUM_LOCK;
-alias KEY_PRINT_SCREEN = .KEY_PRINT_SCREEN;
-alias KEY_PAUSE = .KEY_PAUSE;
-alias KEY_F1 = .KEY_F1;
-alias KEY_F2 = .KEY_F2;
-alias KEY_F3 = .KEY_F3;
-alias KEY_F4 = .KEY_F4;
-alias KEY_F5 = .KEY_F5;
-alias KEY_F6 = .KEY_F6;
-alias KEY_F7 = .KEY_F7;
-alias KEY_F8 = .KEY_F8;
-alias KEY_F9 = .KEY_F9;
-alias KEY_F10 = .KEY_F10;
-alias KEY_F11 = .KEY_F11;
-alias KEY_F12 = .KEY_F12;
-alias KEY_LEFT_SHIFT = .KEY_LEFT_SHIFT;
-alias KEY_LEFT_CONTROL = .KEY_LEFT_CONTROL;
-alias KEY_LEFT_ALT = .KEY_LEFT_ALT;
-alias KEY_LEFT_SUPER = .KEY_LEFT_SUPER;
-alias KEY_RIGHT_SHIFT = .KEY_RIGHT_SHIFT;
-alias KEY_RIGHT_CONTROL = .KEY_RIGHT_CONTROL;
-alias KEY_RIGHT_ALT = .KEY_RIGHT_ALT;
-alias KEY_RIGHT_SUPER = .KEY_RIGHT_SUPER;
-alias KEY_KB_MENU = .KEY_KB_MENU;
-alias KEY_LEFT_BRACKET = .KEY_LEFT_BRACKET;
-alias KEY_BACKSLASH = .KEY_BACKSLASH;
-alias KEY_RIGHT_BRACKET = .KEY_RIGHT_BRACKET;
-alias KEY_GRAVE = .KEY_GRAVE;
-alias KEY_KP_0 = .KEY_KP_0;
-alias KEY_KP_1 = .KEY_KP_1;
-alias KEY_KP_2 = .KEY_KP_2;
-alias KEY_KP_3 = .KEY_KP_3;
-alias KEY_KP_4 = .KEY_KP_4;
-alias KEY_KP_5 = .KEY_KP_5;
-alias KEY_KP_6 = .KEY_KP_6;
-alias KEY_KP_7 = .KEY_KP_7;
-alias KEY_KP_8 = .KEY_KP_8;
-alias KEY_KP_9 = .KEY_KP_9;
-alias KEY_KP_DECIMAL = .KEY_KP_DECIMAL;
-alias KEY_KP_DIVIDE = .KEY_KP_DIVIDE;
-alias KEY_KP_MULTIPLY = .KEY_KP_MULTIPLY;
-alias KEY_KP_SUBTRACT = .KEY_KP_SUBTRACT;
-alias KEY_KP_ADD = .KEY_KP_ADD;
-alias KEY_KP_ENTER = .KEY_KP_ENTER;
-alias KEY_KP_EQUAL = .KEY_KP_EQUAL;
-
 // Android buttons
 enum AndroidButton
 {
@@ -718,11 +601,6 @@ enum AndroidButton
     KEY_VOLUME_DOWN = 25
 }
 
-alias KEY_BACK = .KEY_BACK;
-alias KEY_MENU = .KEY_MENU;
-alias KEY_VOLUME_UP = .KEY_VOLUME_UP;
-alias KEY_VOLUME_DOWN = .KEY_VOLUME_DOWN;
-
 // Mouse buttons
 enum MouseButton
 {
@@ -730,10 +608,6 @@ enum MouseButton
     MOUSE_RIGHT_BUTTON = 1,
     MOUSE_MIDDLE_BUTTON = 2
 }
-
-alias MOUSE_LEFT_BUTTON = .MOUSE_LEFT_BUTTON;
-alias MOUSE_RIGHT_BUTTON = .MOUSE_RIGHT_BUTTON;
-alias MOUSE_MIDDLE_BUTTON = .MOUSE_MIDDLE_BUTTON;
 
 // Mouse cursor types
 enum MouseCursor
@@ -751,18 +625,6 @@ enum MouseCursor
     MOUSE_CURSOR_NOT_ALLOWED = 10 // The operation-not-allowed shape
 }
 
-alias MOUSE_CURSOR_DEFAULT = .MOUSE_CURSOR_DEFAULT;
-alias MOUSE_CURSOR_ARROW = .MOUSE_CURSOR_ARROW;
-alias MOUSE_CURSOR_IBEAM = .MOUSE_CURSOR_IBEAM;
-alias MOUSE_CURSOR_CROSSHAIR = .MOUSE_CURSOR_CROSSHAIR;
-alias MOUSE_CURSOR_POINTING_HAND = .MOUSE_CURSOR_POINTING_HAND;
-alias MOUSE_CURSOR_RESIZE_EW = .MOUSE_CURSOR_RESIZE_EW;
-alias MOUSE_CURSOR_RESIZE_NS = .MOUSE_CURSOR_RESIZE_NS;
-alias MOUSE_CURSOR_RESIZE_NWSE = .MOUSE_CURSOR_RESIZE_NWSE;
-alias MOUSE_CURSOR_RESIZE_NESW = .MOUSE_CURSOR_RESIZE_NESW;
-alias MOUSE_CURSOR_RESIZE_ALL = .MOUSE_CURSOR_RESIZE_ALL;
-alias MOUSE_CURSOR_NOT_ALLOWED = .MOUSE_CURSOR_NOT_ALLOWED;
-
 // Gamepad number
 enum GamepadNumber
 {
@@ -771,11 +633,6 @@ enum GamepadNumber
     GAMEPAD_PLAYER3 = 2,
     GAMEPAD_PLAYER4 = 3
 }
-
-alias GAMEPAD_PLAYER1 = .GAMEPAD_PLAYER1;
-alias GAMEPAD_PLAYER2 = .GAMEPAD_PLAYER2;
-alias GAMEPAD_PLAYER3 = .GAMEPAD_PLAYER3;
-alias GAMEPAD_PLAYER4 = .GAMEPAD_PLAYER4;
 
 // Gamepad buttons
 enum GamepadButton
@@ -814,25 +671,6 @@ enum GamepadButton
     GAMEPAD_BUTTON_RIGHT_THUMB = 17
 }
 
-alias GAMEPAD_BUTTON_UNKNOWN = .GAMEPAD_BUTTON_UNKNOWN;
-alias GAMEPAD_BUTTON_LEFT_FACE_UP = .GAMEPAD_BUTTON_LEFT_FACE_UP;
-alias GAMEPAD_BUTTON_LEFT_FACE_RIGHT = .GAMEPAD_BUTTON_LEFT_FACE_RIGHT;
-alias GAMEPAD_BUTTON_LEFT_FACE_DOWN = .GAMEPAD_BUTTON_LEFT_FACE_DOWN;
-alias GAMEPAD_BUTTON_LEFT_FACE_LEFT = .GAMEPAD_BUTTON_LEFT_FACE_LEFT;
-alias GAMEPAD_BUTTON_RIGHT_FACE_UP = .GAMEPAD_BUTTON_RIGHT_FACE_UP;
-alias GAMEPAD_BUTTON_RIGHT_FACE_RIGHT = .GAMEPAD_BUTTON_RIGHT_FACE_RIGHT;
-alias GAMEPAD_BUTTON_RIGHT_FACE_DOWN = .GAMEPAD_BUTTON_RIGHT_FACE_DOWN;
-alias GAMEPAD_BUTTON_RIGHT_FACE_LEFT = .GAMEPAD_BUTTON_RIGHT_FACE_LEFT;
-alias GAMEPAD_BUTTON_LEFT_TRIGGER_1 = .GAMEPAD_BUTTON_LEFT_TRIGGER_1;
-alias GAMEPAD_BUTTON_LEFT_TRIGGER_2 = .GAMEPAD_BUTTON_LEFT_TRIGGER_2;
-alias GAMEPAD_BUTTON_RIGHT_TRIGGER_1 = .GAMEPAD_BUTTON_RIGHT_TRIGGER_1;
-alias GAMEPAD_BUTTON_RIGHT_TRIGGER_2 = .GAMEPAD_BUTTON_RIGHT_TRIGGER_2;
-alias GAMEPAD_BUTTON_MIDDLE_LEFT = .GAMEPAD_BUTTON_MIDDLE_LEFT;
-alias GAMEPAD_BUTTON_MIDDLE = .GAMEPAD_BUTTON_MIDDLE;
-alias GAMEPAD_BUTTON_MIDDLE_RIGHT = .GAMEPAD_BUTTON_MIDDLE_RIGHT;
-alias GAMEPAD_BUTTON_LEFT_THUMB = .GAMEPAD_BUTTON_LEFT_THUMB;
-alias GAMEPAD_BUTTON_RIGHT_THUMB = .GAMEPAD_BUTTON_RIGHT_THUMB;
-
 // Gamepad axis
 enum GamepadAxis
 {
@@ -848,13 +686,6 @@ enum GamepadAxis
     GAMEPAD_AXIS_LEFT_TRIGGER = 4, // [1..-1] (pressure-level)
     GAMEPAD_AXIS_RIGHT_TRIGGER = 5 // [1..-1] (pressure-level)
 }
-
-alias GAMEPAD_AXIS_LEFT_X = .GAMEPAD_AXIS_LEFT_X;
-alias GAMEPAD_AXIS_LEFT_Y = .GAMEPAD_AXIS_LEFT_Y;
-alias GAMEPAD_AXIS_RIGHT_X = .GAMEPAD_AXIS_RIGHT_X;
-alias GAMEPAD_AXIS_RIGHT_Y = .GAMEPAD_AXIS_RIGHT_Y;
-alias GAMEPAD_AXIS_LEFT_TRIGGER = .GAMEPAD_AXIS_LEFT_TRIGGER;
-alias GAMEPAD_AXIS_RIGHT_TRIGGER = .GAMEPAD_AXIS_RIGHT_TRIGGER;
 
 // Shader location points
 enum ShaderLocationIndex
@@ -886,32 +717,6 @@ enum ShaderLocationIndex
     LOC_MAP_BRDF = 24
 }
 
-alias LOC_VERTEX_POSITION = .LOC_VERTEX_POSITION;
-alias LOC_VERTEX_TEXCOORD01 = .LOC_VERTEX_TEXCOORD01;
-alias LOC_VERTEX_TEXCOORD02 = .LOC_VERTEX_TEXCOORD02;
-alias LOC_VERTEX_NORMAL = .LOC_VERTEX_NORMAL;
-alias LOC_VERTEX_TANGENT = .LOC_VERTEX_TANGENT;
-alias LOC_VERTEX_COLOR = .LOC_VERTEX_COLOR;
-alias LOC_MATRIX_MVP = .LOC_MATRIX_MVP;
-alias LOC_MATRIX_MODEL = .LOC_MATRIX_MODEL;
-alias LOC_MATRIX_VIEW = .LOC_MATRIX_VIEW;
-alias LOC_MATRIX_PROJECTION = .LOC_MATRIX_PROJECTION;
-alias LOC_VECTOR_VIEW = .LOC_VECTOR_VIEW;
-alias LOC_COLOR_DIFFUSE = .LOC_COLOR_DIFFUSE;
-alias LOC_COLOR_SPECULAR = .LOC_COLOR_SPECULAR;
-alias LOC_COLOR_AMBIENT = .LOC_COLOR_AMBIENT;
-alias LOC_MAP_ALBEDO = .LOC_MAP_ALBEDO;
-alias LOC_MAP_METALNESS = .LOC_MAP_METALNESS;
-alias LOC_MAP_NORMAL = .LOC_MAP_NORMAL;
-alias LOC_MAP_ROUGHNESS = .LOC_MAP_ROUGHNESS;
-alias LOC_MAP_OCCLUSION = .LOC_MAP_OCCLUSION;
-alias LOC_MAP_EMISSION = .LOC_MAP_EMISSION;
-alias LOC_MAP_HEIGHT = .LOC_MAP_HEIGHT;
-alias LOC_MAP_CUBEMAP = .LOC_MAP_CUBEMAP;
-alias LOC_MAP_IRRADIANCE = .LOC_MAP_IRRADIANCE;
-alias LOC_MAP_PREFILTER = .LOC_MAP_PREFILTER;
-alias LOC_MAP_BRDF = .LOC_MAP_BRDF;
-
 enum LOC_MAP_DIFFUSE = ShaderLocationIndex.LOC_MAP_ALBEDO;
 enum LOC_MAP_SPECULAR = ShaderLocationIndex.LOC_MAP_METALNESS;
 
@@ -929,16 +734,6 @@ enum ShaderUniformDataType
     UNIFORM_SAMPLER2D = 8
 }
 
-alias UNIFORM_FLOAT = .UNIFORM_FLOAT;
-alias UNIFORM_VEC2 = .UNIFORM_VEC2;
-alias UNIFORM_VEC3 = .UNIFORM_VEC3;
-alias UNIFORM_VEC4 = .UNIFORM_VEC4;
-alias UNIFORM_INT = .UNIFORM_INT;
-alias UNIFORM_IVEC2 = .UNIFORM_IVEC2;
-alias UNIFORM_IVEC3 = .UNIFORM_IVEC3;
-alias UNIFORM_IVEC4 = .UNIFORM_IVEC4;
-alias UNIFORM_SAMPLER2D = .UNIFORM_SAMPLER2D;
-
 // Material maps
 enum MaterialMapType
 {
@@ -954,18 +749,6 @@ enum MaterialMapType
     MAP_PREFILTER = 9, // NOTE: Uses GL_TEXTURE_CUBE_MAP
     MAP_BRDF = 10
 }
-
-alias MAP_ALBEDO = .MAP_ALBEDO;
-alias MAP_METALNESS = .MAP_METALNESS;
-alias MAP_NORMAL = .MAP_NORMAL;
-alias MAP_ROUGHNESS = .MAP_ROUGHNESS;
-alias MAP_OCCLUSION = .MAP_OCCLUSION;
-alias MAP_EMISSION = .MAP_EMISSION;
-alias MAP_HEIGHT = .MAP_HEIGHT;
-alias MAP_CUBEMAP = .MAP_CUBEMAP;
-alias MAP_IRRADIANCE = .MAP_IRRADIANCE;
-alias MAP_PREFILTER = .MAP_PREFILTER;
-alias MAP_BRDF = .MAP_BRDF;
 
 enum MAP_DIFFUSE = MaterialMapType.MAP_ALBEDO;
 enum MAP_SPECULAR = MaterialMapType.MAP_METALNESS;
@@ -997,28 +780,6 @@ enum PixelFormat
     COMPRESSED_ASTC_8x8_RGBA = 21 // 2 bpp
 }
 
-alias UNCOMPRESSED_GRAYSCALE = .UNCOMPRESSED_GRAYSCALE;
-alias UNCOMPRESSED_GRAY_ALPHA = .UNCOMPRESSED_GRAY_ALPHA;
-alias UNCOMPRESSED_R5G6B5 = .UNCOMPRESSED_R5G6B5;
-alias UNCOMPRESSED_R8G8B8 = .UNCOMPRESSED_R8G8B8;
-alias UNCOMPRESSED_R5G5B5A1 = .UNCOMPRESSED_R5G5B5A1;
-alias UNCOMPRESSED_R4G4B4A4 = .UNCOMPRESSED_R4G4B4A4;
-alias UNCOMPRESSED_R8G8B8A8 = .UNCOMPRESSED_R8G8B8A8;
-alias UNCOMPRESSED_R32 = .UNCOMPRESSED_R32;
-alias UNCOMPRESSED_R32G32B32 = .UNCOMPRESSED_R32G32B32;
-alias UNCOMPRESSED_R32G32B32A32 = .UNCOMPRESSED_R32G32B32A32;
-alias COMPRESSED_DXT1_RGB = .COMPRESSED_DXT1_RGB;
-alias COMPRESSED_DXT1_RGBA = .COMPRESSED_DXT1_RGBA;
-alias COMPRESSED_DXT3_RGBA = .COMPRESSED_DXT3_RGBA;
-alias COMPRESSED_DXT5_RGBA = .COMPRESSED_DXT5_RGBA;
-alias COMPRESSED_ETC1_RGB = .COMPRESSED_ETC1_RGB;
-alias COMPRESSED_ETC2_RGB = .COMPRESSED_ETC2_RGB;
-alias COMPRESSED_ETC2_EAC_RGBA = .COMPRESSED_ETC2_EAC_RGBA;
-alias COMPRESSED_PVRT_RGB = .COMPRESSED_PVRT_RGB;
-alias COMPRESSED_PVRT_RGBA = .COMPRESSED_PVRT_RGBA;
-alias COMPRESSED_ASTC_4x4_RGBA = .COMPRESSED_ASTC_4x4_RGBA;
-alias COMPRESSED_ASTC_8x8_RGBA = .COMPRESSED_ASTC_8x8_RGBA;
-
 // Texture parameters: filter mode
 // NOTE 1: Filtering considers mipmaps if available in the texture
 // NOTE 2: Filter is accordingly set for minification and magnification
@@ -1032,13 +793,6 @@ enum TextureFilterMode
     FILTER_ANISOTROPIC_16X = 5 // Anisotropic filtering 16x
 }
 
-alias FILTER_POINT = .FILTER_POINT;
-alias FILTER_BILINEAR = .FILTER_BILINEAR;
-alias FILTER_TRILINEAR = .FILTER_TRILINEAR;
-alias FILTER_ANISOTROPIC_4X = .FILTER_ANISOTROPIC_4X;
-alias FILTER_ANISOTROPIC_8X = .FILTER_ANISOTROPIC_8X;
-alias FILTER_ANISOTROPIC_16X = .FILTER_ANISOTROPIC_16X;
-
 // Texture parameters: wrap mode
 enum TextureWrapMode
 {
@@ -1047,11 +801,6 @@ enum TextureWrapMode
     WRAP_MIRROR_REPEAT = 2, // Mirrors and repeats the texture in tiled mode
     WRAP_MIRROR_CLAMP = 3 // Mirrors and clamps to border the texture in tiled mode
 }
-
-alias WRAP_REPEAT = .WRAP_REPEAT;
-alias WRAP_CLAMP = .WRAP_CLAMP;
-alias WRAP_MIRROR_REPEAT = .WRAP_MIRROR_REPEAT;
-alias WRAP_MIRROR_CLAMP = .WRAP_MIRROR_CLAMP;
 
 // Cubemap layouts
 enum CubemapLayoutType
@@ -1064,13 +813,6 @@ enum CubemapLayoutType
     CUBEMAP_PANORAMA = 5 // Layout is defined by a panorama image (equirectangular map)
 }
 
-alias CUBEMAP_AUTO_DETECT = .CUBEMAP_AUTO_DETECT;
-alias CUBEMAP_LINE_VERTICAL = .CUBEMAP_LINE_VERTICAL;
-alias CUBEMAP_LINE_HORIZONTAL = .CUBEMAP_LINE_HORIZONTAL;
-alias CUBEMAP_CROSS_THREE_BY_FOUR = .CUBEMAP_CROSS_THREE_BY_FOUR;
-alias CUBEMAP_CROSS_FOUR_BY_THREE = .CUBEMAP_CROSS_FOUR_BY_THREE;
-alias CUBEMAP_PANORAMA = .CUBEMAP_PANORAMA;
-
 // Font type, defines generation method
 enum FontType
 {
@@ -1078,10 +820,6 @@ enum FontType
     FONT_BITMAP = 1, // Bitmap font generation, no anti-aliasing
     FONT_SDF = 2 // SDF font generation, requires external shader
 }
-
-alias FONT_DEFAULT = .FONT_DEFAULT;
-alias FONT_BITMAP = .FONT_BITMAP;
-alias FONT_SDF = .FONT_SDF;
 
 // Color blending modes (pre-defined)
 enum BlendMode
@@ -1093,13 +831,6 @@ enum BlendMode
     BLEND_SUBTRACT_COLORS = 4, // Blend textures subtracting colors (alternative)
     BLEND_CUSTOM = 5 // Belnd textures using custom src/dst factors (use SetBlendModeCustom())
 }
-
-alias BLEND_ALPHA = .BLEND_ALPHA;
-alias BLEND_ADDITIVE = .BLEND_ADDITIVE;
-alias BLEND_MULTIPLIED = .BLEND_MULTIPLIED;
-alias BLEND_ADD_COLORS = .BLEND_ADD_COLORS;
-alias BLEND_SUBTRACT_COLORS = .BLEND_SUBTRACT_COLORS;
-alias BLEND_CUSTOM = .BLEND_CUSTOM;
 
 // Gestures type
 // NOTE: It could be used as flags to enable only some gestures
@@ -1118,18 +849,6 @@ enum GestureType
     GESTURE_PINCH_OUT = 512
 }
 
-alias GESTURE_NONE = .GESTURE_NONE;
-alias GESTURE_TAP = .GESTURE_TAP;
-alias GESTURE_DOUBLETAP = .GESTURE_DOUBLETAP;
-alias GESTURE_HOLD = .GESTURE_HOLD;
-alias GESTURE_DRAG = .GESTURE_DRAG;
-alias GESTURE_SWIPE_RIGHT = .GESTURE_SWIPE_RIGHT;
-alias GESTURE_SWIPE_LEFT = .GESTURE_SWIPE_LEFT;
-alias GESTURE_SWIPE_UP = .GESTURE_SWIPE_UP;
-alias GESTURE_SWIPE_DOWN = .GESTURE_SWIPE_DOWN;
-alias GESTURE_PINCH_IN = .GESTURE_PINCH_IN;
-alias GESTURE_PINCH_OUT = .GESTURE_PINCH_OUT;
-
 // Camera system modes
 enum CameraMode
 {
@@ -1140,21 +859,12 @@ enum CameraMode
     CAMERA_THIRD_PERSON = 4
 }
 
-alias CAMERA_CUSTOM = .CAMERA_CUSTOM;
-alias CAMERA_FREE = .CAMERA_FREE;
-alias CAMERA_ORBITAL = .CAMERA_ORBITAL;
-alias CAMERA_FIRST_PERSON = .CAMERA_FIRST_PERSON;
-alias CAMERA_THIRD_PERSON = .CAMERA_THIRD_PERSON;
-
 // Camera projection modes
 enum CameraType
 {
     CAMERA_PERSPECTIVE = 0,
     CAMERA_ORTHOGRAPHIC = 1
 }
-
-alias CAMERA_PERSPECTIVE = .CAMERA_PERSPECTIVE;
-alias CAMERA_ORTHOGRAPHIC = .CAMERA_ORTHOGRAPHIC;
 
 // N-patch types
 enum NPatchType
@@ -1163,10 +873,6 @@ enum NPatchType
     NPT_3PATCH_VERTICAL = 1, // Npatch defined by 1x3 tiles
     NPT_3PATCH_HORIZONTAL = 2 // Npatch defined by 3x1 tiles
 }
-
-alias NPT_9PATCH = .NPT_9PATCH;
-alias NPT_3PATCH_VERTICAL = .NPT_3PATCH_VERTICAL;
-alias NPT_3PATCH_HORIZONTAL = .NPT_3PATCH_HORIZONTAL;
 
 // Callbacks to be implemented by users
 alias TraceLogCallback = void function (int logType, const(char)* text, va_list args);

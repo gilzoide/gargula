@@ -56,6 +56,7 @@ inc_dir = include_directories(
 sources = files(
   'source/gargula/game.d',
   'source/gargula/package.d',
+  'source/gargula/wrapper/raylib.d',
 )
 
 gargula_dep = declare_dependency(
