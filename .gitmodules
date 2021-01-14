@@ -1,0 +1,7 @@
+[submodule "libs/druntime"]
+	path = libs/druntime
+	url = https://github.com/skoppe/druntime.git
+	branch = wasm
+[submodule "subprojects/raylib"]
+	path = subprojects/raylib
+	url = https://github.com/raysan5/raylib.git
