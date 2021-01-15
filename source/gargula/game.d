@@ -2,6 +2,7 @@ module gargula.game;
 
 import betterclist;
 
+import gargula.resource;
 import gargula.wrapper.raylib;
 
 version (WebAssembly)
@@ -25,8 +26,17 @@ private struct GameObject
     frameMethod frame;
 }
 
-struct Game(size_t N = 1024)
+struct GameConfig
 {
+    size_t maxObjects = 1024;
+    string[] textures = [];
+}
+
+struct Game(GameConfig _config = GameConfig.init)
+{
+    private enum N = _config.maxObjects;
+    private enum textures = _config.textures;
+
     /// Initial window width
     int width = 800;
     /// Initial window height
@@ -40,6 +50,8 @@ struct Game(size_t N = 1024)
 
     /// Dynamic list of root game objects
     private List!(GameObject, N) rootObjects;
+
+    alias Texture = TextureResource!(textures);
 
     /// Creates a new object of type `T` and adds it to root list.
     /// `T` must have a `create` method (like Nodes do).
