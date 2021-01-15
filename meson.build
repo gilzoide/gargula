@@ -15,6 +15,7 @@ raylib_opts.add_cmake_defines({
   'PLATFORM': meson.get_external_property('raylib_platform', 'Desktop'),
   # Add other CMake options for Raylib, if needed
 })
+raylib_opts.append_compile_args('c', '-w')
 raylib_subproject = cmake.subproject('raylib', options: raylib_opts)
 dependencies += raylib_subproject.dependency('raylib_static')
 
