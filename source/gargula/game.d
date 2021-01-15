@@ -4,10 +4,9 @@ import betterclist;
 
 import gargula.wrapper.raylib;
 
-extern(C):
-
 version (WebAssembly)
 {
+extern(C):
     alias loop_func = void function(void*);
     ///
     void emscripten_set_main_loop_arg(loop_func, void*, int, int);
@@ -39,8 +38,25 @@ struct Game(size_t N = 1024)
     /// Clear color
     Color clearColor = RAYWHITE;
 
-    /// Dynamic list of game objects
-    private List!(GameObject, N) objects;
+    /// Dynamic list of root game objects
+    private List!(GameObject, N) rootObjects;
+
+    /// Creates a new object of type `T` and adds it to root list.
+    /// `T` must have a `create` method (like Nodes do).
+    T* createObject(T)()
+    {
+        typeof(return) object = T.create();
+        addObject(object);
+        return object;
+    }
+
+    /// Add an object to root list.
+    void addObject(T)(T* object)
+    in { assert(object != null, "Trying to add a null object to Game"); }
+    do
+    {
+        rootObjects.pushBack(GameObject(object, &object._frame));
+    }
 
     /// Run main loop
     void run()
@@ -62,7 +78,7 @@ struct Game(size_t N = 1024)
         ClearBackground(clearColor);
         debug DrawFPS(0, 0);
 
-        foreach (o; objects)
+        foreach (o; rootObjects)
         {
             o.frame(delta);
         }
@@ -72,7 +88,7 @@ struct Game(size_t N = 1024)
 
     version (WebAssembly)
     {
-        private static void callFrame(Game* game)
+        extern(C) private static void callFrame(Game* game)
         {
             game.frame();
         }

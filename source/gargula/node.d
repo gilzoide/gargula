@@ -50,7 +50,7 @@ mixin template Node()
         callReverseChildrenThenSelf!"lateInitialize"();
     }
 
-    void _frame(double dt)
+    void _frame(float dt)
     {
         callSelfThenChildren!"update"(dt);
         callReverseChildrenThenSelf!"lateUpdate"(dt);
@@ -61,7 +61,7 @@ mixin template Node()
 
     static T* create()
     {
-        import memory : Memory;
+        import gargula.memory : Memory;
         typeof(return) obj = Memory.make!T();
         obj.initializeNode();
         return obj;
