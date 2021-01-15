@@ -15,6 +15,14 @@ raylib_opts.add_cmake_defines({
   'PLATFORM': meson.get_external_property('raylib_platform', 'Desktop'),
   # Add other CMake options for Raylib, if needed
 })
+foreach opt : get_option('raylib_options')
+  split_opt = opt.split('=')
+  if split_opt.length() > 1
+    raylib_opts.add_cmake_defines({ split_opt[0] : split_opt[1] })
+  else
+    raylib_opts.add_cmake_defines({ split_opt[0] : 'ON' })
+  endif
+endforeach
 raylib_opts.append_compile_args('c', '-w')
 raylib_subproject = cmake.subproject('raylib', options: raylib_opts)
 dependencies += raylib_subproject.dependency('raylib_static')

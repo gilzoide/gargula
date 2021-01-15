@@ -1,0 +1,3 @@
+option('raylib_options', type: 'array', value: [],
+    description: '''Options forwarded to raylib's CMake project, in a "key=value" format. If key is omitted, value is set to "ON"'''
+)
