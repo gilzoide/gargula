@@ -2,7 +2,6 @@ module gargula.game;
 
 import betterclist;
 
-import gargula.resource;
 import gargula.wrapper.raylib;
 
 version (WebAssembly)
@@ -34,6 +33,9 @@ struct GameConfig
 
 struct Game(GameConfig _config = GameConfig.init)
 {
+    import gargula.resource : TextureResource;
+    import gargula.builtin : SpriteTemplate;
+
     private enum N = _config.maxObjects;
     private enum textures = _config.textures;
 
@@ -52,6 +54,7 @@ struct Game(GameConfig _config = GameConfig.init)
     private List!(GameObject, N) rootObjects;
 
     alias Texture = TextureResource!(textures);
+    alias Sprite = SpriteTemplate!(Texture);
 
     /// Creates a new object of type `T` and adds it to root list.
     /// `T` must have a `create` method (like Nodes do).
