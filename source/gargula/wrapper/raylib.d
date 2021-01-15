@@ -77,6 +77,7 @@ import core.stdc.config;
 import core.stdc.stdarg;
 import bettercmath.vector : _Vector = Vector;
 import bettercmath.matrix : _Matrix = Matrix;
+import bettercmath.box : _BoundingBox = BoundingBox, BoundingBoxOptions;
 
 extern (C):
 
@@ -165,13 +166,7 @@ alias Matrix = _Matrix!(float, 4);
 alias Color = _Vector!(ubyte, 4);
 
 // Rectangle type
-struct Rectangle
-{
-    float x = 0;
-    float y = 0;
-    float width = 0;
-    float height = 0;
-}
+alias Rectangle = _BoundingBox!(float, 2, BoundingBoxOptions.storeSize);
 
 // Image type, bpp always RGBA (32bit)
 // NOTE: Data stored in CPU memory (RAM)
@@ -375,11 +370,7 @@ struct RayHitInfo
 }
 
 // Bounding box type
-struct BoundingBox
-{
-    Vector3 min; // Minimum vertex box-corner
-    Vector3 max; // Maximum vertex box-corner
-}
+alias BoundingBox = _BoundingBox!(float, 2);
 
 // Wave type, defines audio wave data
 struct Wave

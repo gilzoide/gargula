@@ -1,7 +1,7 @@
 #!/bin/sh
 
 script_root=$(dirname $(realpath $0))
-project_root="$script_root/.."
+project_root="$script_root"
 
 raylib_h="$project_root/subprojects/raylib/src/raylib.h"
 raylib_d="$project_root/source/gargula/wrapper/raylib.d"
@@ -20,12 +20,14 @@ colors=$(sed -n -E '/CLITERAL\(Color\)/s/#define (\w+).+\{(.+)\}/enum Color \1 =
 
 sedscript=$(echo '
 # Import bettercmath and replace Vector*, Matrix and Color definitions
-/^import core.stdc.stdarg;/a import bettercmath.vector : _Vector = Vector;\nimport bettercmath.matrix : _Matrix = Matrix;
+/^import core.stdc.stdarg;/a import bettercmath.vector : _Vector = Vector;\nimport bettercmath.matrix : _Matrix = Matrix;\nimport bettercmath.box : _BoundingBox = BoundingBox, BoundingBoxOptions;
 /^struct Vector2/,/^}/c alias Vector2 = _Vector!(float, 2);
 /^struct Vector3/,/^}/c alias Vector3 = _Vector!(float, 3);
 /^struct Vector4/,/^}/c alias Vector4 = _Vector!(float, 4);
 /^struct Matrix/,/^}/c  alias Matrix = _Matrix!(float, 4);
 /^struct Color/,/^}/c   alias Color = _Vector!(ubyte, 4);
+/^struct Rectangle/,/^}/c  alias Rectangle = _BoundingBox!(float, 2, BoundingBoxOptions.storeSize);
+/^struct BoundingBox/,/^}/c  alias BoundingBox = _BoundingBox!(float, 2);
 
 # Fix initial float values as 0 instead of NaN
 s/^(\s+float[^*][^;]+);/\1 = 0;/g
