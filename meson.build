@@ -63,6 +63,8 @@ inc_dir = include_directories(
 )
 
 sources = files(
+  'source/gargula/builtin/clearbackground.d',
+  'source/gargula/builtin/package.d',
   'source/gargula/game.d',
   'source/gargula/memory.d',
   'source/gargula/node.d',

@@ -1,5 +1,6 @@
 module gargula;
 
+public import gargula.builtin;
 public import gargula.game;
 public import gargula.memory;
 public import gargula.node;
