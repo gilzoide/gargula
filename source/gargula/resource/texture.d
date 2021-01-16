@@ -4,8 +4,10 @@ import flyweightbyid;
 
 import gargula.wrapper.raylib;
 
-template TextureResource(string[] files)
+template TextureResource(string[] _files)
 {
+    immutable static string[] files = _files;
+
     Texture load(uint id)
     in { assert(id < files.length); }
     do
