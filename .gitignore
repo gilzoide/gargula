@@ -1,3 +1,5 @@
 build*/
 /tmp*
 .cache/
+.dub/
+/*gargula*

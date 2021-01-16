@@ -1,0 +1,28 @@
+{
+  "name": "gargula",
+	"authors": [
+		"gilzoide"
+	],
+	"description": "Game engine based on nested structs powered by raylib and compatible with betterC",
+	"license": "public license",
+	"configurations": [
+		{
+			"name": "library"
+		},
+		{
+			"name": "betterC",
+			"buildOptions": [
+				"betterC"
+			]
+		}
+	],
+	"libs": [
+		"raylib"
+	],
+	"dependencies": {
+		"bettercmath": "~>0.3.0",
+		"betterclist": "~>0.1.1",
+		"flyweightbyid": "~>0.1.0"
+	},
+	"targetType": "sourceLibrary"
+}

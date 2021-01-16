@@ -145,3 +145,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         }
     }
 }
+
+unittest
+{
+    alias Game = GameTemplate!();
+}
