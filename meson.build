@@ -67,6 +67,7 @@ sources = files(
   'source/gargula/builtin/package.d',
   'source/gargula/builtin/sprite.d',
   'source/gargula/game.d',
+  'source/gargula/log.d',
   'source/gargula/memory.d',
   'source/gargula/node.d',
   'source/gargula/package.d',
