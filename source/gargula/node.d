@@ -5,7 +5,6 @@ mixin template Node()
 {
     private alias T = typeof(this);
 
-    import std.meta : Reverse;
     import std.traits : Fields, FieldNameTuple, hasMember;
     void callSelfThenChildren(string method, Args...)(Args args)
     {
@@ -27,6 +26,7 @@ mixin template Node()
     }
     void callReverseChildrenThenSelf(string method, Args...)(Args args)
     {
+        import std.meta : Reverse;
         static foreach (i, fieldName; Reverse!(FieldNameTuple!T))
         {
             static if (hasMember!(Reverse!(Fields!T)[i], "callReverseChildrenThenSelf"))
@@ -44,12 +44,6 @@ mixin template Node()
         }
     }
 
-    void initializeNode()
-    {
-        callSelfThenChildren!"initialize"();
-        callReverseChildrenThenSelf!"lateInitialize"();
-    }
-
     void _frame(float dt)
     {
         callSelfThenChildren!"update"(dt);
@@ -63,7 +57,8 @@ mixin template Node()
     {
         import gargula.memory : Memory;
         typeof(return) obj = Memory.make!T();
-        obj.initializeNode();
+        obj.callSelfThenChildren!"initialize"();
+        obj.callReverseChildrenThenSelf!"lateInitialize"();
         return obj;
     }
 }

@@ -25,7 +25,7 @@ foreach opt : get_option('raylib_options')
 endforeach
 raylib_opts.append_compile_args('c', '-w')
 raylib_subproject = cmake.subproject('raylib', options: raylib_opts)
-dependencies += raylib_subproject.dependency('raylib_static')
+dependencies += raylib_subproject.dependency('raylib')
 
 # D subprojects
 betterclist = subproject('betterclist')
@@ -65,6 +65,7 @@ inc_dir = include_directories(
 sources = files(
   'source/gargula/builtin/clearbackground.d',
   'source/gargula/builtin/package.d',
+  'source/gargula/builtin/sprite.d',
   'source/gargula/game.d',
   'source/gargula/memory.d',
   'source/gargula/node.d',
