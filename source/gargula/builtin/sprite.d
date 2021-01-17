@@ -5,9 +5,12 @@ import gargula.wrapper.raylib;
 
 enum SpriteOptions
 {
-    none,
-    axisAligned,
-    fixedAnchor,
+    /// Default options: dynamic rotation and pivot
+    none = 0,
+    /// Axis Aligned Sprites may not rotate
+    axisAligned = 1 << 0,
+    /// Pivot is fixed to Sprite's center
+    fixedPivot = 1 << 1,
 }
 
 struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
@@ -33,13 +36,13 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
         float scale = 1;
     }
 
-    static if (options & SpriteOptions.fixedAnchor)
+    static if (options & SpriteOptions.fixedPivot)
     {
-        enum Vector2 anchor = 0.5;
+        enum Vector2 pivot = 0.5;
     }
     else
     {
-        Vector2 anchor = 0.5;
+        Vector2 pivot = 0.5;
     }
 
     Vector2 size() const pure
@@ -51,12 +54,12 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
     {
         auto sourceRect = Rectangle(Vector2(0), size);
         auto destRect = Rectangle(position, scale * size);
-        auto origin = anchor * size * scale;
+        auto origin = pivot * size * scale;
         DrawTexturePro(texture, sourceRect, destRect, origin, rotation, tintColor);
     }
 }
 
 alias Sprite = SpriteTemplate!(Texture);
-alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedAnchor);
+alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedPivot);
 alias AASprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned);
-alias AACenteredSprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned | SpriteOptions.fixedAnchor);
+alias AACenteredSprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);

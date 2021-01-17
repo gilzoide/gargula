@@ -61,9 +61,9 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     alias Texture = TextureResource!(textures);
     // Nodes that depend on resources
     alias Sprite = SpriteTemplate!(TextureResource!(textures));
-    alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedAnchor);
+    alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedPivot);
     alias AASprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned);
-    alias AACenteredSprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned | SpriteOptions.fixedAnchor);
+    alias AACenteredSprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
 
     this(int argc, const char** argv)
     {
