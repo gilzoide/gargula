@@ -14,7 +14,7 @@ enum TweenOptions
 }
 
 /// Tween Node with fixed easing function
-struct Tween(alias easingName = "linear", TweenOptions options = TweenOptions.none)
+struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.none)
 {
     mixin Node;
 
@@ -136,3 +136,7 @@ struct Tween(alias easingName = "linear", TweenOptions options = TweenOptions.no
         _value = valueAtCurrentPosition();
     }
 }
+
+alias TweenYoyo(string easingName = "linear") = Tween!(easingName, TweenOptions.yoyo);
+alias TweenCallback(string easingName = "linear") = Tween!(easingName, TweenOptions.endCallback);
+alias TweenYoyoCallback(string easingName = "linear") = Tween!(easingName, TweenOptions.yoyo | TweenOptions.endCallback);
