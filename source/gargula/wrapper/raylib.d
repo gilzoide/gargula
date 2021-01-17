@@ -246,7 +246,7 @@ struct Camera3D
 {
     Vector3 position; // Camera position
     Vector3 target; // Camera target it looks-at
-    Vector3 up; // Camera up vector (rotation over its axis)
+    Vector3 up = Vector3(0, 1, 0); // Camera up vector (rotation over its axis)
     float fovy = 0; // Camera field-of-view apperture in Y (degrees) in perspective, used as near plane width in orthographic
     int type; // Camera type, defines projection type: CAMERA_PERSPECTIVE or CAMERA_ORTHOGRAPHIC
 }

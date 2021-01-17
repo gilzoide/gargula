@@ -30,13 +30,16 @@ sedscript=$(echo '
 /^struct BoundingBox/,/^}/c  alias BoundingBox = _BoundingBox!(float, 2);
 
 # Fix initial float values as 0 instead of NaN
-s/^(\s+float[^*][^;]+);/\1 = 0;/g
+s/^(\s+float[^*][^;]+);/\1 = 0;/
 
 # Fix initial value for Camera2D.zoom
-s/float zoom = 0;/float zoom = 1;/g
+s/float zoom = 0;/float zoom = 1;/
+
+# Set initial value for Camera3D.up to [0, 1, 0]
+s/(Vector3 up)/\1 = Vector3(0, 1, 0)/
 
 # Fix "Temporal hack" aliases
-s/^enum (\w+ = \w+;)/alias \1/g
+s/^enum (\w+ = \w+;)/alias \1/
 
 # Remove enum type names, to use them directly from D code
 s/enum [^;]*$/enum/
