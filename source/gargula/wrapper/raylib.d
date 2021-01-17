@@ -370,7 +370,7 @@ struct RayHitInfo
 }
 
 // Bounding box type
-alias BoundingBox = _BoundingBox!(float, 2);
+alias BoundingBox = _BoundingBox!(float, 3);
 
 // Wave type, defines audio wave data
 struct Wave
