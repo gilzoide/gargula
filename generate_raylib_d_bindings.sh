@@ -38,6 +38,12 @@ s/float zoom = 0;/float zoom = 1;/g
 # Fix "Temporal hack" aliases
 s/^enum (\w+ = \w+;)/alias \1/g
 
+# Remove enum type names, to use them directly from D code
+s/enum [^;]*$/enum/
+
+# Remove some enum namespaces usage just removed
+s/(enum \w* = )[a-zA-Z_]*\.([a-zA-Z_]*;)/\1\2/
+
 # Add color constants
 /Some Basic Colors/r/dev/stdin
 ')

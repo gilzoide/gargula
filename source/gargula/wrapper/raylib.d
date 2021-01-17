@@ -435,7 +435,7 @@ struct VrDeviceInfo
 // System/Window config flags
 // NOTE: Every bit registers one state (use it with bit masks)
 // By default all flags are set to 0
-enum ConfigFlag
+enum
 {
     FLAG_VSYNC_HINT = 0x00000040, // Set to try enabling V-Sync on GPU
     FLAG_FULLSCREEN_MODE = 0x00000002, // Set to run program in fullscreen
@@ -454,7 +454,7 @@ enum ConfigFlag
 }
 
 // Trace log type
-enum TraceLogType
+enum
 {
     LOG_ALL = 0, // Display all logs
     LOG_TRACE = 1,
@@ -469,7 +469,7 @@ enum TraceLogType
 // Keyboard keys (US keyboard layout)
 // NOTE: Use GetKeyPressed() to allow redefining
 // required keys for alternative layouts
-enum KeyboardKey
+enum
 {
     // Alphanumeric keys
     KEY_APOSTROPHE = 39,
@@ -584,7 +584,7 @@ enum KeyboardKey
 }
 
 // Android buttons
-enum AndroidButton
+enum
 {
     KEY_BACK = 4,
     KEY_MENU = 82,
@@ -593,7 +593,7 @@ enum AndroidButton
 }
 
 // Mouse buttons
-enum MouseButton
+enum
 {
     MOUSE_LEFT_BUTTON = 0,
     MOUSE_RIGHT_BUTTON = 1,
@@ -601,7 +601,7 @@ enum MouseButton
 }
 
 // Mouse cursor types
-enum MouseCursor
+enum
 {
     MOUSE_CURSOR_DEFAULT = 0,
     MOUSE_CURSOR_ARROW = 1,
@@ -617,7 +617,7 @@ enum MouseCursor
 }
 
 // Gamepad number
-enum GamepadNumber
+enum
 {
     GAMEPAD_PLAYER1 = 0,
     GAMEPAD_PLAYER2 = 1,
@@ -626,7 +626,7 @@ enum GamepadNumber
 }
 
 // Gamepad buttons
-enum GamepadButton
+enum
 {
     // This is here just for error checking
     GAMEPAD_BUTTON_UNKNOWN = 0,
@@ -663,7 +663,7 @@ enum GamepadButton
 }
 
 // Gamepad axis
-enum GamepadAxis
+enum
 {
     // Left stick
     GAMEPAD_AXIS_LEFT_X = 0,
@@ -679,7 +679,7 @@ enum GamepadAxis
 }
 
 // Shader location points
-enum ShaderLocationIndex
+enum
 {
     LOC_VERTEX_POSITION = 0,
     LOC_VERTEX_TEXCOORD01 = 1,
@@ -708,11 +708,11 @@ enum ShaderLocationIndex
     LOC_MAP_BRDF = 24
 }
 
-enum LOC_MAP_DIFFUSE = ShaderLocationIndex.LOC_MAP_ALBEDO;
-enum LOC_MAP_SPECULAR = ShaderLocationIndex.LOC_MAP_METALNESS;
+enum LOC_MAP_DIFFUSE = LOC_MAP_ALBEDO;
+enum LOC_MAP_SPECULAR = LOC_MAP_METALNESS;
 
 // Shader uniform data types
-enum ShaderUniformDataType
+enum
 {
     UNIFORM_FLOAT = 0,
     UNIFORM_VEC2 = 1,
@@ -726,7 +726,7 @@ enum ShaderUniformDataType
 }
 
 // Material maps
-enum MaterialMapType
+enum
 {
     MAP_ALBEDO = 0, // MAP_DIFFUSE
     MAP_METALNESS = 1, // MAP_SPECULAR
@@ -741,12 +741,12 @@ enum MaterialMapType
     MAP_BRDF = 10
 }
 
-enum MAP_DIFFUSE = MaterialMapType.MAP_ALBEDO;
-enum MAP_SPECULAR = MaterialMapType.MAP_METALNESS;
+enum MAP_DIFFUSE = MAP_ALBEDO;
+enum MAP_SPECULAR = MAP_METALNESS;
 
 // Pixel formats
 // NOTE: Support depends on OpenGL version and platform
-enum PixelFormat
+enum
 {
     UNCOMPRESSED_GRAYSCALE = 1, // 8 bit per pixel (no alpha)
     UNCOMPRESSED_GRAY_ALPHA = 2, // 8*2 bpp (2 channels)
@@ -774,7 +774,7 @@ enum PixelFormat
 // Texture parameters: filter mode
 // NOTE 1: Filtering considers mipmaps if available in the texture
 // NOTE 2: Filter is accordingly set for minification and magnification
-enum TextureFilterMode
+enum
 {
     FILTER_POINT = 0, // No filter, just pixel aproximation
     FILTER_BILINEAR = 1, // Linear filtering
@@ -785,7 +785,7 @@ enum TextureFilterMode
 }
 
 // Texture parameters: wrap mode
-enum TextureWrapMode
+enum
 {
     WRAP_REPEAT = 0, // Repeats texture in tiled mode
     WRAP_CLAMP = 1, // Clamps texture to edge pixel in tiled mode
@@ -794,7 +794,7 @@ enum TextureWrapMode
 }
 
 // Cubemap layouts
-enum CubemapLayoutType
+enum
 {
     CUBEMAP_AUTO_DETECT = 0, // Automatically detect layout type
     CUBEMAP_LINE_VERTICAL = 1, // Layout is defined by a vertical line with faces
@@ -805,7 +805,7 @@ enum CubemapLayoutType
 }
 
 // Font type, defines generation method
-enum FontType
+enum
 {
     FONT_DEFAULT = 0, // Default font generation, anti-aliased
     FONT_BITMAP = 1, // Bitmap font generation, no anti-aliasing
@@ -813,7 +813,7 @@ enum FontType
 }
 
 // Color blending modes (pre-defined)
-enum BlendMode
+enum
 {
     BLEND_ALPHA = 0, // Blend textures considering alpha (default)
     BLEND_ADDITIVE = 1, // Blend textures adding colors
@@ -825,7 +825,7 @@ enum BlendMode
 
 // Gestures type
 // NOTE: It could be used as flags to enable only some gestures
-enum GestureType
+enum
 {
     GESTURE_NONE = 0,
     GESTURE_TAP = 1,
@@ -841,7 +841,7 @@ enum GestureType
 }
 
 // Camera system modes
-enum CameraMode
+enum
 {
     CAMERA_CUSTOM = 0,
     CAMERA_FREE = 1,
@@ -851,14 +851,14 @@ enum CameraMode
 }
 
 // Camera projection modes
-enum CameraType
+enum
 {
     CAMERA_PERSPECTIVE = 0,
     CAMERA_ORTHOGRAPHIC = 1
 }
 
 // N-patch types
-enum NPatchType
+enum
 {
     NPT_9PATCH = 0, // Npatch defined by 3x3 tiles
     NPT_3PATCH_VERTICAL = 1, // Npatch defined by 1x3 tiles
