@@ -52,7 +52,7 @@
 *   raylib is licensed under an unmodified zlib/libpng license, which is an OSI-certified,
 *   BSD-like license that allows static linking with closed source software:
 *
-*   Copyright (c) 2013-2020 Ramon Santamaria (@raysan5)
+*   Copyright (c) 2013-2021 Ramon Santamaria (@raysan5)
 *
 *   This software is provided "as-is", without any express or implied warranty. In no event
 *   will the authors be held liable for any damages arising from the use of this software.
@@ -820,7 +820,7 @@ enum BlendMode
     BLEND_MULTIPLIED = 2, // Blend textures multiplying colors
     BLEND_ADD_COLORS = 3, // Blend textures adding colors (alternative)
     BLEND_SUBTRACT_COLORS = 4, // Blend textures subtracting colors (alternative)
-    BLEND_CUSTOM = 5 // Belnd textures using custom src/dst factors (use SetBlendModeCustom())
+    BLEND_CUSTOM = 5 // Belnd textures using custom src/dst factors (use rlSetBlendMode())
 }
 
 // Gestures type
@@ -907,6 +907,7 @@ void* GetWindowHandle (); // Get native window handle
 int GetScreenWidth (); // Get current screen width
 int GetScreenHeight (); // Get current screen height
 int GetMonitorCount (); // Get number of connected monitors
+int GetCurrentMonitor (); // Get current connected monitor
 Vector2 GetMonitorPosition (int monitor); // Get specified monitor position
 int GetMonitorWidth (int monitor); // Get specified monitor width
 int GetMonitorHeight (int monitor); // Get specified monitor height
@@ -1081,6 +1082,7 @@ void DrawLine (int startPosX, int startPosY, int endPosX, int endPosY, Color col
 void DrawLineV (Vector2 startPos, Vector2 endPos, Color color); // Draw a line (Vector version)
 void DrawLineEx (Vector2 startPos, Vector2 endPos, float thick, Color color); // Draw a line defining thickness
 void DrawLineBezier (Vector2 startPos, Vector2 endPos, float thick, Color color); // Draw a line using cubic-bezier curves in-out
+void DrawLineBezierQuad (Vector2 startPos, Vector2 endPos, Vector2 controlPos, float thick, Color color); //Draw line using quadratic bezier curves with a control point
 void DrawLineStrip (Vector2* points, int pointsCount, Color color); // Draw lines sequence
 void DrawCircle (int centerX, int centerY, float radius, Color color); // Draw a color-filled circle
 void DrawCircleSector (Vector2 center, float radius, int startAngle, int endAngle, int segments, Color color); // Draw a piece of a circle
