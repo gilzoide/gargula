@@ -1,8 +1,7 @@
 module gargula.node;
 
-void traverseCallingNodes(
+void traverseCallingSelfThenChildren(
     string method,
-    string lateMethod,
     string ifFieldTrue,
     T, Args...
 )(
@@ -20,7 +19,6 @@ if (is(T == struct))
         }
     }
 
-    // Going deep into fields
     static if (hasMember!(T, method))
     {
         __traits(getMember, obj, method)(args);
@@ -29,12 +27,41 @@ if (is(T == struct))
     {
         static if (is(Fields!T[i] == struct))
         {
-            traverseCallingNodes!(method, lateMethod, ifFieldTrue)(__traits(getMember, obj, fieldName), args);
+            traverseCallingSelfThenChildren!(method, ifFieldTrue)(__traits(getMember, obj, fieldName), args);
         }
     }
-    static if (hasMember!(T, lateMethod))
+}
+
+void traverseCallingReverseChildrenThenSelf(
+    string method,
+    string ifFieldTrue,
+    T, Args...
+)(
+    auto ref T obj,
+    auto ref Args args
+)
+if (is(T == struct))
+{
+    import std.meta : Reverse;
+    import std.traits : Fields, FieldNameTuple, hasMember;
+    static if (hasMember!(T, ifFieldTrue))
     {
-        __traits(getMember, obj, lateMethod)(args);
+        if (!__traits(getMember, obj, ifFieldTrue))
+        {
+            return;
+        }
+    }
+
+    static foreach (i, fieldName; Reverse!(FieldNameTuple!T))
+    {
+        static if (is(Reverse!(Fields!T)[i] == struct))
+        {
+            traverseCallingSelfThenChildren!(method, ifFieldTrue)(__traits(getMember, obj, fieldName), args);
+        }
+    }
+    static if (hasMember!(T, method))
+    {
+        __traits(getMember, obj, method)(args);
     }
 }
 
@@ -55,15 +82,19 @@ mixin template Node()
 
     void _frame(float dt)
     {
-        traverseCallingNodes!("update", "lateUpdate", "active")(this, dt);
-        traverseCallingNodes!("draw", "lateDraw", "visible")(this);
+        traverseCallingSelfThenChildren!("update", "active")(this, dt);
+        traverseCallingReverseChildrenThenSelf!("lateUpdate", "active")(this, dt);
+
+        traverseCallingSelfThenChildren!("draw", "visible")(this);
+        traverseCallingReverseChildrenThenSelf!("lateDraw", "visible")(this);
     }
 
     static T* create()
     {
         import gargula.memory : Memory;
         typeof(return) obj = Memory.make!T();
-        traverseCallingNodes!("initialize", "lateInitialize", "_")(*obj);
+        traverseCallingSelfThenChildren!("initialize", "_")(*obj);
+        traverseCallingReverseChildrenThenSelf!("lateInitialize", "_")(*obj);
         return obj;
     }
 }
