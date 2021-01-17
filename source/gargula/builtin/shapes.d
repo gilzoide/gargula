@@ -6,6 +6,41 @@ import gargula.wrapper.raylib;
 
 // 3D shapes
 
+/// Draw a cube
+struct CubeNode
+{
+    /// Cube position
+    Vector3 position = 0;
+    /// Cube size
+    Vector3 size = 1;
+
+    /// Color
+    Color color = WHITE;
+    /// Whether to draw wireframe
+    bool wires = false;
+
+    BoundingBox boundingBox() const
+    {
+        BoundingBox result;
+        result.start = position;
+        result.size = size;
+        return result;
+    }
+    
+    ///
+    void draw()
+    {
+        if (wires)
+        {
+            DrawCubeV(position, size, color);
+        }
+        else
+        {
+            DrawCubeWiresV(position, size, color);
+        }
+    }
+}
+
 /// Draw a sphere
 struct SphereNode
 {
