@@ -1,64 +1,69 @@
 module gargula.node;
 
+void traverseCallingNodes(
+    string method,
+    string lateMethod,
+    string ifFieldTrue,
+    T, Args...
+)(
+    auto ref T obj,
+    auto ref Args args
+)
+if (is(T == struct))
+{
+    import std.traits : Fields, FieldNameTuple, hasMember;
+    static if (hasMember!(T, ifFieldTrue))
+    {
+        if (!__traits(getMember, obj, ifFieldTrue))
+        {
+            return;
+        }
+    }
+
+    // Going deep into fields
+    static if (hasMember!(T, method))
+    {
+        __traits(getMember, obj, method)(args);
+    }
+    static foreach (i, fieldName; FieldNameTuple!T)
+    {
+        static if (is(Fields!T[i] == struct))
+        {
+            traverseCallingNodes!(method, lateMethod, ifFieldTrue)(__traits(getMember, obj, fieldName), args);
+        }
+    }
+    static if (hasMember!(T, lateMethod))
+    {
+        __traits(getMember, obj, lateMethod)(args);
+    }
+}
+
 /// Node in the object tree
 mixin template Node()
 {
     private alias T = typeof(this);
 
-    import std.traits : Fields, FieldNameTuple, hasMember;
-    void callSelfThenChildren(string method, Args...)(Args args)
+    import std.traits : hasMember;
+    static if (hasMember!(T, "update") || hasMember!(T, "lateUpdate"))
     {
-        static if (hasMember!(T, method))
-        {
-            __traits(getMember, this, method)(args);
-        }
-        static foreach (i, fieldName; FieldNameTuple!T)
-        {
-            static if (hasMember!(Fields!T[i], "callSelfThenChildren"))
-            {
-                __traits(getMember, this, fieldName).callSelfThenChildren!method(args);
-            }
-            else static if (hasMember!(Fields!T[i], method))
-            {
-                __traits(getMember, __traits(getMember, this, fieldName), method)(args);
-            }
-        }
+        bool active = true;
     }
-    void callReverseChildrenThenSelf(string method, Args...)(Args args)
+    static if (hasMember!(T, "draw") || hasMember!(T, "lateDraw"))
     {
-        import std.meta : Reverse;
-        static foreach (i, fieldName; Reverse!(FieldNameTuple!T))
-        {
-            static if (hasMember!(Reverse!(Fields!T)[i], "callReverseChildrenThenSelf"))
-            {
-                __traits(getMember, this, fieldName).callReverseChildrenThenSelf!method(args);
-            }
-            else static if (hasMember!(Reverse!(Fields!T)[i], method))
-            {
-                __traits(getMember, __traits(getMember, this, fieldName), method)(args);
-            }
-        }
-        static if (hasMember!(T, method))
-        {
-            __traits(getMember, this, method)(args);
-        }
+        bool visible = true;
     }
 
     void _frame(float dt)
     {
-        callSelfThenChildren!"update"(dt);
-        callReverseChildrenThenSelf!"lateUpdate"(dt);
-
-        callSelfThenChildren!"draw"();
-        callReverseChildrenThenSelf!"lateDraw"();
+        traverseCallingNodes!("update", "lateUpdate", "active")(this, dt);
+        traverseCallingNodes!("draw", "lateDraw", "visible")(this);
     }
 
     static T* create()
     {
         import gargula.memory : Memory;
         typeof(return) obj = Memory.make!T();
-        obj.callSelfThenChildren!"initialize"();
-        obj.callReverseChildrenThenSelf!"lateInitialize"();
+        traverseCallingNodes!("initialize", "lateInitialize", "_")(*obj);
         return obj;
     }
 }
