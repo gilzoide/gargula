@@ -43,6 +43,12 @@ struct GameConfig
     string title = "Title";
     /// Default clear color, may be changed at runtime on GameTemplate instance
     Color clearColor = RAYWHITE;
+
+    /// Returns a Vector2 with window size
+    @property Vector2 size() const
+    {
+        return Vector2(width, height);
+    }
 }
 
 struct GameTemplate(GameConfig _config = GameConfig.init)
@@ -50,6 +56,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     import gargula.resource : TextureResource;
     import gargula.builtin : SpriteTemplate, SpriteOptions;
 
+    /// Game configuration
+    enum config = _config;
     private enum N = _config.maxObjects;
     private enum textures = _config.textures;
 
