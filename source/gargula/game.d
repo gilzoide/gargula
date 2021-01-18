@@ -36,11 +36,13 @@ struct GameConfig
     /// Initial window width
     int width = 800;
     /// Initial window height
-    int height = 600;
+    int height = 450;
     /// Target number of Frames per Second
     int targetFPS = 60;
     /// Initial window title
     string title = "Title";
+    /// Default clear color, may be changed at runtime on GameTemplate instance
+    Color clearColor = RAYWHITE;
 }
 
 struct GameTemplate(GameConfig _config = GameConfig.init)
@@ -52,7 +54,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     private enum textures = _config.textures;
 
     /// Clear color
-    Color clearColor = RAYWHITE;
+    Color clearColor = _config.clearColor;
 
     /// Dynamic list of root game objects
     private List!(GameObject, N) rootObjects;
@@ -60,11 +62,23 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     // Resource Flyweights
     alias Texture = TextureResource!(textures);
     // Nodes that depend on resources
-    alias Sprite = SpriteTemplate!(TextureResource!(textures));
+    alias Sprite = SpriteTemplate!(Texture);
     alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedPivot);
     alias AASprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned);
     alias AACenteredSprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
 
+    this(const string[] args)
+    {
+        if (args.length > 0)
+        {
+            const char* dir = GetDirectoryPath(cast(const char*) args[0]);
+            if (dir[0])
+            {
+                ChangeDirectory(dir);
+            }
+        }
+        InitWindow(_config.width, _config.height, cast(const char*) _config.title);
+    }
     this(int argc, const char** argv)
     {
         if (argc > 0)
@@ -80,15 +94,15 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
     /// Creates a new object of type `T` and adds it to root list.
     /// `T` must have a `create` method (like Nodes do).
-    T* createObject(T)()
+    T* create(T)()
     {
         typeof(return) object = T.create();
-        addObject(object);
+        add(object);
         return object;
     }
 
     /// Add an object to root list.
-    void addObject(T)(T* object)
+    void add(T)(T* object)
     in { assert(object != null, "Trying to add a null object to Game"); }
     do
     {
