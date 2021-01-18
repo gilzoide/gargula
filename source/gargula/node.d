@@ -2,7 +2,7 @@ module gargula.node;
 
 void traverseCallingSelfThenChildren(
     string method,
-    string ifFieldTrue,
+    string ifFieldTrue = null,
     T, Args...
 )(
     auto ref T obj,
@@ -10,8 +10,10 @@ void traverseCallingSelfThenChildren(
 )
 if (is(T == struct))
 {
+    static if (method == null) return;
+
     import std.traits : Fields, FieldNameTuple, hasMember;
-    static if (hasMember!(T, ifFieldTrue))
+    static if (ifFieldTrue != null && hasMember!(T, ifFieldTrue))
     {
         if (!__traits(getMember, obj, ifFieldTrue))
         {
@@ -34,7 +36,7 @@ if (is(T == struct))
 
 void traverseCallingReverseChildrenThenSelf(
     string method,
-    string ifFieldTrue,
+    string ifFieldTrue = null,
     T, Args...
 )(
     auto ref T obj,
@@ -42,9 +44,11 @@ void traverseCallingReverseChildrenThenSelf(
 )
 if (is(T == struct))
 {
+    static if (method == null) return;
+
     import std.meta : Reverse;
     import std.traits : Fields, FieldNameTuple, hasMember;
-    static if (hasMember!(T, ifFieldTrue))
+    static if (ifFieldTrue != null && hasMember!(T, ifFieldTrue))
     {
         if (!__traits(getMember, obj, ifFieldTrue))
         {
@@ -80,21 +84,42 @@ mixin template Node()
         bool visible = true;
     }
 
+    /// Broadcasts `method` to all fields that define this member function.
+    ///
+    /// First calls `method` on this object, if defined, then in all fields
+    /// from first to last that also define it.
+    ///
+    /// Optionally, broadcast `lateMethod` in the same fashion as `method`,
+    /// but reversing the order: first call it in all fields from last to
+    /// first that defines the function, then call on this object.
+    ///
+    /// Optionally, pass `ifFieldTrue` to check in runtime for this field
+    /// before calling the functions for objects that define it. A falsey
+    /// value makes function not be called.
+    void broadcast(
+        string method,
+        string lateMethod = null,
+        string ifFieldTrue = null,
+        Args...
+    ) (
+        auto ref Args args
+    )
+    {
+        traverseCallingSelfThenChildren!(method, ifFieldTrue)(this, args);
+        traverseCallingReverseChildrenThenSelf!(lateMethod, ifFieldTrue)(this, args);
+    }
+
     void _frame()
     {
-        traverseCallingSelfThenChildren!("update", "active")(this);
-        traverseCallingReverseChildrenThenSelf!("lateUpdate", "active")(this);
-
-        traverseCallingSelfThenChildren!("draw", "visible")(this);
-        traverseCallingReverseChildrenThenSelf!("lateDraw", "visible")(this);
+        broadcast!("update", "lateUpdate", "active");
+        broadcast!("draw", "lateDraw", "visible");
     }
 
     static T* create()
     {
         import gargula.memory : Memory;
         typeof(return) obj = Memory.make!T();
-        traverseCallingSelfThenChildren!("initialize", "_")(*obj);
-        traverseCallingReverseChildrenThenSelf!("lateInitialize", "_")(*obj);
+        obj.broadcast!("initialize", "lateInitialize");
         return obj;
     }
 }
