@@ -21,6 +21,13 @@
 			"targetName": "basic_window",
 			"targetType": "executable",
 			"targetPath": "build"
+		},
+		{
+			"name": "keyboard_input",
+			"sourceFiles": ["examples/keyboard_input.d"],
+			"targetName": "keyboard_input",
+			"targetType": "executable",
+			"targetPath": "build"
 		}
 	],
 	"libs": [
