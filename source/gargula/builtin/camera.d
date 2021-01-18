@@ -112,7 +112,7 @@ struct Camera3DNode
         EndMode3D();
     }
     ///
-    void update(float _)
+    void update()
     {
         UpdateCamera(&camera);
     }

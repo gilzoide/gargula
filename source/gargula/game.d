@@ -18,7 +18,7 @@ extern(C):
     }
 }
 
-private alias frameMethod = void delegate(float);
+private alias frameMethod = void delegate();
 private struct GameObject
 {
     void* object;
@@ -130,14 +130,13 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
     private void frame()
     {
-        immutable float delta = GetFrameTime();
         BeginDrawing();
 
         ClearBackground(clearColor);
 
         foreach (o; rootObjects)
         {
-            o.frame(delta);
+            o.frame();
         }
 
         static if (_config.showDebugFPS) debug DrawFPS(0, 0);

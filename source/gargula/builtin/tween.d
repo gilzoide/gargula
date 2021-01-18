@@ -22,6 +22,8 @@ struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.n
     import bettercmath.misc : lerp;
     import bettercmath.valuerange : ValueRange;
 
+    import gargula.wrapper.raylib : GetFrameTime;
+
     /// Easing function used
     enum easingFunc = Easing!float.named!easingName;
 
@@ -104,9 +106,9 @@ struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.n
     }
 
     ///
-    void update(float dt)
+    void update()
     {
-        time += dt * speed;
+        time += GetFrameTime() * speed;
         if (time > duration || time < 0)
         {
             static if (options & TweenOptions.yoyo)

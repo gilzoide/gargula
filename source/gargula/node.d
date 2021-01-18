@@ -80,10 +80,10 @@ mixin template Node()
         bool visible = true;
     }
 
-    void _frame(float dt)
+    void _frame()
     {
-        traverseCallingSelfThenChildren!("update", "active")(this, dt);
-        traverseCallingReverseChildrenThenSelf!("lateUpdate", "active")(this, dt);
+        traverseCallingSelfThenChildren!("update", "active")(this);
+        traverseCallingReverseChildrenThenSelf!("lateUpdate", "active")(this);
 
         traverseCallingSelfThenChildren!("draw", "visible")(this);
         traverseCallingReverseChildrenThenSelf!("lateDraw", "visible")(this);
