@@ -28,6 +28,13 @@
 			"targetName": "keyboard_input",
 			"targetType": "executable",
 			"targetPath": "build"
+		},
+		{
+			"name": "mouse_input",
+			"sourceFiles": ["examples/mouse_input.d"],
+			"targetName": "mouse_input",
+			"targetType": "executable",
+			"targetPath": "build"
 		}
 	],
 	"libs": [
