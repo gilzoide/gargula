@@ -45,6 +45,8 @@ struct GameConfig
     string[] textures = [];
     /// Font file paths
     string[] fonts = [];
+    /// Config flags for window
+    uint windowFlags = 0;
 
     /// Returns a Vector2 with window size
     @property Vector2 size() const
@@ -109,6 +111,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
     private void initWindow()
     {
+        static if (_config.windowFlags > 0)
+        {
+            SetConfigFlags(_config.windowFlags);
+        }
         InitWindow(_config.width, _config.height, cast(const char*) _config.title);
     }
 

@@ -7,6 +7,7 @@ enum GameConfig gameConfig = {
     fonts: [
         "SatellaRegular.ttf",
     ],
+    windowFlags: FLAG_WINDOW_RESIZABLE,
 };
 alias Game = GameTemplate!(gameConfig);
 
