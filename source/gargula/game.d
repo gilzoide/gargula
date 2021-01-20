@@ -29,8 +29,6 @@ struct GameConfig
 {
     /// Max number of objects at a time
     size_t maxObjects = 1024;
-    /// Texture file paths
-    string[] textures = [];
     /// Whether FPS should be shown on debug builds
     bool showDebugFPS = true;
     /// Initial window width
@@ -43,6 +41,10 @@ struct GameConfig
     string title = "Title";
     /// Default clear color, may be changed at runtime on GameTemplate instance
     Color clearColor = RAYWHITE;
+    /// Texture file paths
+    string[] textures = [];
+    /// Font file paths
+    string[] fonts = [];
 
     /// Returns a Vector2 with window size
     @property Vector2 size() const
@@ -55,13 +57,14 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 {
     import betterclist : List;
 
-    import gargula.resource : TextureResource;
+    import gargula.resource : FontResource, TextureResource;
     import gargula.builtin : SpriteTemplate, SpriteOptions;
 
     /// Game configuration
     enum config = _config;
     private enum N = _config.maxObjects;
     private enum textures = _config.textures;
+    private enum fonts = _config.fonts;
 
     /// Clear color
     Color clearColor = _config.clearColor;
@@ -71,6 +74,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
     // Resource Flyweights
     alias Texture = TextureResource!(textures);
+    alias Font = FontResource!(fonts);
     // Nodes that depend on resources
     alias Sprite = SpriteTemplate!(Texture);
     alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedPivot);
@@ -81,24 +85,30 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         if (args.length > 0)
         {
-            const char* dir = GetDirectoryPath(cast(const char*) args[0].ptr);
-            if (dir[0])
-            {
-                ChangeDirectory(dir);
-            }
+            processArg0(args[0].ptr);
         }
-        InitWindow(_config.width, _config.height, cast(const char*) _config.title);
+        initWindow();
     }
     this(int argc, const char** argv)
     {
         if (argc > 0)
         {
-            const char* dir = GetDirectoryPath(argv[0]);
-            if (dir[0])
-            {
-                ChangeDirectory(dir);
-            }
+            processArg0(argv[0]);
         }
+        initWindow();
+    }
+
+    private void processArg0(const char* arg0)
+    {
+        const char* dir = GetDirectoryPath(arg0);
+        if (dir[0])
+        {
+            ChangeDirectory(dir);
+        }
+    }
+
+    private void initWindow()
+    {
         InitWindow(_config.width, _config.height, cast(const char*) _config.title);
     }
 
@@ -148,6 +158,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             destroyRemainingObjects();
             // Destroying all objects should suffice to destroy remaining
             // Flyweight instances, but just to be sure...
+            Font.unloadAll();
             Texture.unloadAll();
             CloseWindow();
         }

@@ -74,6 +74,7 @@ sources = files(
   'source/gargula/memory.d',
   'source/gargula/node.d',
   'source/gargula/package.d',
+  'source/gargula/resource/font.d',
   'source/gargula/resource/package.d',
   'source/gargula/resource/texture.d',
   'source/gargula/wrapper/raylib.d',

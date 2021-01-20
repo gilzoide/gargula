@@ -37,10 +37,18 @@
 			"targetPath": "build"
 		},
 		{
-			"name": "texture_loading_and_drawing",
-			"sourceFiles": ["examples/texture_loading_and_drawing.d"],
+			"name": "texture_loading",
+			"sourceFiles": ["examples/texture_loading.d"],
 			"copyFiles": ["examples/oi.png"],
-			"targetName": "texture_loading_and_drawing",
+			"targetName": "texture_loading",
+			"targetType": "executable",
+			"targetPath": "build"
+		},
+		{
+			"name": "font_loading",
+			"sourceFiles": ["examples/font_loading.d"],
+			"copyFiles": ["examples/SatellaRegular.ttf"],
+			"targetName": "font_loading",
 			"targetType": "executable",
 			"targetPath": "build"
 		}

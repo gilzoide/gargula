@@ -1,7 +1,7 @@
 import gargula;
 
 enum GameConfig gameConfig = {
-    title: "mouse input",
+    title: "texture loading",
     // Texture files declared here are stored in a Flyweight instance
     // and be reference counted/automatically unloaded when not needed
     textures: [

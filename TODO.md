@@ -7,7 +7,7 @@
 [ ] 3D (meshes, models, materials, animations) resources and nodes
 [ ] Sprite with texture subrect
 [ ] SpriteSheets/AnimatedSprites
-[ ] Font resources
+[X] Font resources
 [ ] Labels (text node)
 [ ] RenderTexture resources
 [ ] ScissorMode node
