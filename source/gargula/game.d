@@ -1,7 +1,6 @@
 module gargula.game;
 
-import betterclist;
-
+import gargula.log;
 import gargula.wrapper.raylib;
 
 version (WebAssembly)
@@ -13,16 +12,17 @@ extern(C):
     ///
     void __assert(const char* message, const char* file, int line)
     {
-        import core.stdc.stdio : printf;
-        printf("Assertion error @ %s:%d: %s", file, line, message);
+        Log.Fatal("Assertion error @ %s:%d: %s", file, line, message);
     }
 }
 
 private alias frameMethod = void delegate();
+private alias destroyMethod = void function(void *);
 private struct GameObject
 {
     void* object;
     frameMethod frame;
+    destroyMethod destroy;
 }
 
 struct GameConfig
@@ -53,6 +53,8 @@ struct GameConfig
 
 struct GameTemplate(GameConfig _config = GameConfig.init)
 {
+    import betterclist : List;
+
     import gargula.resource : TextureResource;
     import gargula.builtin : SpriteTemplate, SpriteOptions;
 
@@ -79,7 +81,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         if (args.length > 0)
         {
-            const char* dir = GetDirectoryPath(cast(const char*) args[0]);
+            const char* dir = GetDirectoryPath(cast(const char*) args[0].ptr);
             if (dir[0])
             {
                 ChangeDirectory(dir);
@@ -114,7 +116,27 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     in { assert(object != null, "Trying to add a null object to Game"); }
     do
     {
-        rootObjects.pushBack(GameObject(object, &object._frame));
+        frameMethod _frame = &object._frame;
+        static if (__traits(compiles, &.destroy!(false, T)))
+        {
+            destroyMethod _destroy = cast(destroyMethod) &.destroy!(false, T);
+        }
+        else
+        {
+            destroyMethod _destroy = cast(destroyMethod) &.destroy!(T);
+        }
+        rootObjects.pushBack(GameObject(object, _frame, _destroy));
+    }
+
+    private void destroyRemainingObjects()
+    {
+        foreach (ref o; rootObjects)
+        {
+            import gargula.memory : Memory;
+            o.destroy(o.object);
+            Memory.dispose!false(o.object);
+        }
+        rootObjects.clear();
     }
 
     /// Run main loop
@@ -123,6 +145,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         SetTargetFPS(_config.targetFPS);
         scope(exit)
         {
+            destroyRemainingObjects();
+            // Destroying all objects should suffice to destroy remaining
+            // Flyweight instances, but just to be sure...
+            Texture.unloadAll();
             CloseWindow();
         }
         loopFrame();

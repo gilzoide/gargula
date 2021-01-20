@@ -57,9 +57,13 @@ struct Memory
     }
 
     /// Dispose memory pointed by `pointer` and reinitialize it to `null`.
-    static void dispose(T)(ref T* pointer)
+    static void dispose(bool callDestroy = true, T)(ref T* pointer)
     {
-        // TODO: destroy
+        import std.traits : hasElaborateDestructor;
+        static if (callDestroy && hasElaborateDestructor!T)
+        {
+            destroy(*pointer);
+        }
         free(pointer);
         pointer = null;
     }
