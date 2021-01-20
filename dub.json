@@ -35,6 +35,14 @@
 			"targetName": "mouse_input",
 			"targetType": "executable",
 			"targetPath": "build"
+		},
+		{
+			"name": "texture_loading_and_drawing",
+			"sourceFiles": ["examples/texture_loading_and_drawing.d"],
+			"copyFiles": ["examples/oi.png"],
+			"targetName": "texture_loading_and_drawing",
+			"targetType": "executable",
+			"targetPath": "build"
 		}
 	],
 	"libs": [
