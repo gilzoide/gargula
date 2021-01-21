@@ -109,6 +109,11 @@ mixin template Node()
         traverseCallingReverseChildrenThenSelf!(lateMethod, ifFieldTrue)(this, args);
     }
 
+    void _initialize()
+    {
+        broadcast!("initialize", "lateInitialize");
+    }
+
     void _frame()
     {
         broadcast!("update", "lateUpdate", "active");
@@ -119,7 +124,7 @@ mixin template Node()
     {
         import gargula.memory : Memory;
         typeof(return) obj = Memory.make!T();
-        obj.broadcast!("initialize", "lateInitialize");
+        obj._initialize();
         return obj;
     }
 }

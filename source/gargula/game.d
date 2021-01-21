@@ -4,7 +4,11 @@ import gargula.log;
 import gargula.wrapper.raylib;
 
 version (D_BetterC) {}
-else debug version = HotReload;
+else debug
+{
+    version = HotReload;
+    version = SaveState;
+}
 
 version (WebAssembly)
 {
@@ -32,6 +36,12 @@ package struct GameObject
         initializeMethod initialize;
         string typeName;
     }
+    version (SaveState)
+    {
+        import std.json : JSONValue;
+        alias serializeMethod = JSONValue function(void*);
+        serializeMethod serialize;
+    }
 }
 
 struct GameConfig
@@ -56,6 +66,15 @@ struct GameConfig
     string[] fonts = [];
     /// Config flags for window
     uint windowFlags = 0;
+
+    /// Combo keys for triggering reload or save/load state
+    int[] debugComboKeys = [KEY_LEFT_CONTROL, KEY_LEFT_SHIFT];
+    /// Key that triggers a game reload on debug
+    int debugReloadKey = KEY_R;
+    /// Key that triggers a save game state on debug
+    int debugSaveStateKey = KEY_C;
+    /// Key that triggers a load game state on debug
+    int debugLoadStateKey = KEY_V;
 
     /// Returns a Vector2 with window size
     @property Vector2 size() const
@@ -96,6 +115,11 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         import gargula.hotreload : HotReload;
         private HotReload!(typeof(this)) hotreload;
+    }
+    version (SaveState)
+    {
+        import gargula.savestate : SaveState;
+        private SaveState!(typeof(this)) saveState;
     }
 
     this(const string[] args)
@@ -165,8 +189,13 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         auto gameObject = GameObject(object, _frame, _destroy);
         version (HotReload)
         {
-            gameObject.initialize = &object.initialize;
+            gameObject.initialize = &object._initialize;
             gameObject.typeName = T.stringof;
+        }
+        version (SaveState)
+        {
+            import gargula.savestate : serialize;
+            gameObject.serialize = cast(GameObject.serializeMethod) &serialize!(T);
         }
         rootObjects.pushBack(gameObject);
     }
@@ -210,12 +239,16 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
     private void frame()
     {
+        BeginDrawing();
+
         version (HotReload)
         {
             hotreload.update(this);
         }
-
-        BeginDrawing();
+        version (SaveState)
+        {
+            saveState.update(this);
+        }
 
         ClearBackground(clearColor);
 

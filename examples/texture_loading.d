@@ -29,7 +29,7 @@ struct Scene
 
     void draw()
     {
-        DrawTexture(texture, Game.config.width / 2 - texture.width / 2, Game.config.height / 2 - texture.height / 2, WHITE);
+        DrawTexture(texture, (Game.config.width - texture.width) / 2, (Game.config.height - texture.height) / 2, WHITE);
 
         DrawText("this IS a texture!", 360, 370, 10, GRAY);
     }
