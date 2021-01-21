@@ -36,6 +36,7 @@ dependencies += [
   betterclist.get_variable('betterclist_dep'),
   bettercmath.get_variable('bettercmath_dep'),
   flyweightbyid.get_variable('flyweightbyid_dep'),
+  dependency('fswatch', version: ['>=0.5.1', '<0.6.0'], method: 'dub'),
 ]
 
 # General configuration
@@ -70,6 +71,7 @@ sources = files(
   'source/gargula/builtin/sprite.d',
   'source/gargula/builtin/tween.d',
   'source/gargula/game.d',
+  'source/gargula/hotreload.d',
   'source/gargula/log.d',
   'source/gargula/memory.d',
   'source/gargula/node.d',

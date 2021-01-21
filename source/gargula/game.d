@@ -59,6 +59,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 {
     import betterclist : List;
 
+    import hotreload = gargula.hotreload;
     import gargula.resource : FontResource, TextureResource;
     import gargula.builtin : SpriteTemplate, SpriteOptions;
 
@@ -87,7 +88,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         if (args.length > 0)
         {
-            processArg0(args[0].ptr);
+            import std.string : toStringz;
+            processArg0(args[0].toStringz);
         }
         initWindow();
     }
@@ -106,6 +108,9 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         if (dir[0])
         {
             ChangeDirectory(dir);
+
+            version (D_BetterC) {}
+            else debug hotreload.initialize(".", GetFileName(arg0), textures, fonts);
         }
     }
 
@@ -173,6 +178,9 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
     private void frame()
     {
+        version (D_BetterC) {}
+        else debug hotreload.update(this);
+
         BeginDrawing();
 
         ClearBackground(clearColor);
