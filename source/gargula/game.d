@@ -3,6 +3,9 @@ module gargula.game;
 import gargula.log;
 import gargula.wrapper.raylib;
 
+version (D_BetterC) {}
+else debug version = HotReload;
+
 version (WebAssembly)
 {
 extern(C):
@@ -16,13 +19,19 @@ extern(C):
     }
 }
 
-private alias frameMethod = void delegate();
-private alias destroyMethod = void function(void *);
-private struct GameObject
+package alias initializeMethod = void delegate();
+package alias frameMethod = void delegate();
+package alias destroyMethod = void function(void*);
+package struct GameObject
 {
     void* object;
     frameMethod frame;
     destroyMethod destroy;
+    version (HotReload)
+    {
+        initializeMethod initialize;
+        string typeName;
+    }
 }
 
 struct GameConfig
@@ -59,7 +68,6 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 {
     import betterclist : List;
 
-    import hotreload = gargula.hotreload;
     import gargula.resource : FontResource, TextureResource;
     import gargula.builtin : SpriteTemplate, SpriteOptions;
 
@@ -73,7 +81,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     Color clearColor = _config.clearColor;
 
     /// Dynamic list of root game objects
-    private List!(GameObject, N) rootObjects;
+    package List!(GameObject, N) rootObjects;
 
     // Resource Flyweights
     alias Texture = TextureResource!(textures);
@@ -83,6 +91,12 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedPivot);
     alias AASprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned);
     alias AACenteredSprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
+
+    version (HotReload)
+    {
+        import gargula.hotreload : HotReload;
+        private HotReload!(typeof(this)) hotreload;
+    }
 
     this(const string[] args)
     {
@@ -109,8 +123,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         {
             ChangeDirectory(dir);
 
-            version (D_BetterC) {}
-            else debug hotreload.initialize(".", GetFileName(arg0), textures, fonts);
+            version (HotReload)
+            {
+                hotreload.initialize(".", GetFileName(arg0), textures, fonts);
+            }
         }
     }
 
@@ -146,7 +162,13 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         {
             destroyMethod _destroy = cast(destroyMethod) &.destroy!(T);
         }
-        rootObjects.pushBack(GameObject(object, _frame, _destroy));
+        auto gameObject = GameObject(object, _frame, _destroy);
+        version (HotReload)
+        {
+            gameObject.initialize = &object.initialize;
+            gameObject.typeName = T.stringof;
+        }
+        rootObjects.pushBack(gameObject);
     }
 
     private void destroyRemainingObjects()
@@ -160,6 +182,12 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         rootObjects.clear();
     }
 
+    private void unloadFlyweights()
+    {
+        Font.unloadAll();
+        Texture.unloadAll();
+    }
+
     /// Run main loop
     void run()
     {
@@ -169,8 +197,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             destroyRemainingObjects();
             // Destroying all objects should suffice to destroy remaining
             // Flyweight instances, but just to be sure...
-            Font.unloadAll();
-            Texture.unloadAll();
+            unloadFlyweights();
             CloseWindow();
         }
         loopFrame();
@@ -178,8 +205,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
     private void frame()
     {
-        version (D_BetterC) {}
-        else debug hotreload.update(this);
+        version (HotReload)
+        {
+            hotreload.update(this);
+        }
 
         BeginDrawing();
 

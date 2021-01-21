@@ -1,11 +1,12 @@
 module gargula.hotreload;
 
-version (D_BetterC) {}
-else debug version = HotReload;
-
-version (HotReload)
+struct HotReload(Game)
 {
-    private void log(bool prefix = true, Args...)(string fmt, auto ref Args args)
+    import std.string : toStringz;
+
+    import fswatch : FileChangeEventType, FileWatch;
+
+    private static void log(bool prefix = true, Args...)(string fmt, auto ref Args args)
     {
         import gargula.log : Log;
         static if (prefix)
@@ -15,15 +16,16 @@ version (HotReload)
         Log.Info(fmt, args);
     }
 
-    import fswatch : FileChangeEventType, FileWatch;
     FileWatch watcher;
+    string executableName;
     string[] filesToWatch;
     void initialize(string baseDir, const char* exename, string[][] fileLists...)
     {
         import std.array : join;
         import std.conv : to;
         watcher = FileWatch(baseDir, true);
-        filesToWatch = to!string(exename) ~ join(fileLists);
+        executableName = to!string(exename);
+        filesToWatch = join(fileLists);
 
         log("Watching files");
         foreach (file; filesToWatch)
@@ -32,28 +34,38 @@ version (HotReload)
         }
     }
 
-    void update(Game)(ref Game game)
+    void update(ref Game game)
     {
-        bool shouldReload = false;
+        bool shouldReload = false, shouldReloadSymbols = false;
         foreach (event; watcher.getEvents())
         {
             import std.algorithm : canFind;
-            import std.string : toStringz;
-            if (filesToWatch.canFind(event.path) && event.type == FileChangeEventType.modify)
+            if (event.path == executableName && event.type == FileChangeEventType.modify)
+            {
+                log("Executable modified, will reload symbols");
+                shouldReload = true;
+                shouldReloadSymbols = true;
+            }
+            else if ((filesToWatch.canFind(event.path) && event.type == FileChangeEventType.modify)
+                    || (filesToWatch.canFind(event.newPath) && event.type == FileChangeEventType.rename))
             {
                 log("File modified '%s'", event.path.toStringz);
                 shouldReload = true;
             }
+            //else
+            //{
+                //log("- '%s' %d", event.path.toStringz, event.type);
+            //}
         }
 
         if (shouldReload)
         {
-            // TODO
+            foreach (o; game.rootObjects)
+            {
+                log("Reloading '%s'", o.typeName.toStringz);
+                o.destroy(o.object);
+                o.initialize();
+            }
         }
     }
-}
-else
-{
-    void initialize(Args...)(auto ref Args args) {}
-    void update(Args...)(auto ref Args args) {}
 }
