@@ -1,5 +1,10 @@
 module gargula.hotreload;
 
+version (Posix)
+{
+    extern(C) int execl(const char* path, const char* arg0, ...);
+}
+
 struct HotReload(Game)
 {
     import std.string : toStringz;
@@ -36,28 +41,33 @@ struct HotReload(Game)
 
     void update(ref Game game)
     {
-        bool shouldReload = false, shouldReloadSymbols = false;
+        bool shouldReload = false, shouldReloadCode = false;
         foreach (event; watcher.getEvents())
         {
-            import std.algorithm : canFind;
-            if (event.path == executableName && event.type == FileChangeEventType.modify)
+            import std.algorithm : among, canFind;
+            auto isSomeUpdateEvent = event.type.among(FileChangeEventType.modify, FileChangeEventType.create);
+            if (isSomeUpdateEvent && event.path == executableName)
             {
                 log("Executable modified, will reload symbols");
                 shouldReload = true;
-                shouldReloadSymbols = true;
+                shouldReloadCode = true;
             }
-            else if ((filesToWatch.canFind(event.path) && event.type == FileChangeEventType.modify)
+            else if ((isSomeUpdateEvent && filesToWatch.canFind(event.path))
                     || (filesToWatch.canFind(event.newPath) && event.type == FileChangeEventType.rename))
             {
                 log("File modified '%s'", event.path.toStringz);
                 shouldReload = true;
             }
-            //else
-            //{
-                //log("- '%s' %d", event.path.toStringz, event.type);
-            //}
+            else
+            {
+                log("- '%s' %d", event.path.toStringz, event.type);
+            }
         }
 
+        if (shouldReloadCode)
+        {
+            reloadCode(game);
+        }
         if (shouldReload)
         {
             foreach (o; game.rootObjects)
@@ -66,6 +76,21 @@ struct HotReload(Game)
                 o.destroy(o.object);
                 o.initialize();
             }
+        }
+    }
+
+    private void reloadCode(ref Game game)
+    {
+        version (Posix)
+        {
+            log("Reloading code!");
+            game.cleanup();
+            destroy(watcher);
+            execl(executableName.toStringz, executableName.toStringz, null);
+        }
+        else
+        {
+            log("Code reloading is not implemented for this platform yet!");
         }
     }
 }

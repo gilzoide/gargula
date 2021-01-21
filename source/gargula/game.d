@@ -188,17 +188,22 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         Texture.unloadAll();
     }
 
+    package void cleanup()
+    {
+        destroyRemainingObjects();
+        // Destroying all objects should suffice to destroy remaining
+        // Flyweight instances, but just to be sure...
+        unloadFlyweights();
+        CloseWindow();
+    }
+
     /// Run main loop
     void run()
     {
         SetTargetFPS(_config.targetFPS);
         scope(exit)
         {
-            destroyRemainingObjects();
-            // Destroying all objects should suffice to destroy remaining
-            // Flyweight instances, but just to be sure...
-            unloadFlyweights();
-            CloseWindow();
+            cleanup(); 
         }
         loopFrame();
     }
