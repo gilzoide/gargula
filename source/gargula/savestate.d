@@ -2,6 +2,8 @@ module gargula.savestate;
 
 import std.json;
 
+import flyweightbyid;
+
 JSONValue serialize(T)(ref T value)
 {
     static if (is(T == struct) || is(T == class))
@@ -21,6 +23,12 @@ JSONValue serialize(T)(ref T value)
     {
         return JSONValue(value);
     }
+}
+
+JSONValue serialize(T : Flyweight!Args, Args...)(ref T value)
+{
+    JSONValue[string] json;
+    return JSONValue(json);
 }
 
 package struct SaveState(Game)
