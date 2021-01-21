@@ -1,5 +1,6 @@
 module gargula.savestate;
 
+import std.algorithm : among;
 import std.json;
 import std.string : toStringz;
 
@@ -8,6 +9,8 @@ import flyweightbyid;
 import gargula.log : Log;
 
 enum skipSerialization(T) = is(T : Flyweight!Args, Args...) || is(T : U*, U);
+enum skipSerialization(T, string field) = (is(T == struct) || is(T == class))
+    && __traits(getProtection, __traits(getMember, T, field)).among("private", "protected");
 
 JSONValue serialize(T)(ref T value)
 if (!skipSerialization!T)
@@ -18,9 +21,12 @@ if (!skipSerialization!T)
         JSONValue[string] json;
         static foreach (i, field; FieldNameTuple!T)
         {
-            if (__traits(getMember, value, field) != __traits(getMember, T.init, field))
+            static if (!skipSerialization!(T, field))
             {
-                json[field] = __traits(getMember, value, field).serialize;
+                if (__traits(getMember, value, field) != __traits(getMember, T.init, field))
+                {
+                    json[field] = __traits(getMember, value, field).serialize;
+                }
             }
         }
         return JSONValue(json);
@@ -51,9 +57,12 @@ if (!skipSerialization!T)
         import std.traits : FieldNameTuple;
         static foreach (i, field; FieldNameTuple!T)
         {
-            if (field in json.object)
+            static if (!skipSerialization!(T, field))
             {
-                deserializeInto(&__traits(getMember, value, field), json.object[field]);
+                if (field in json.object)
+                {
+                    deserializeInto(&__traits(getMember, value, field), json.object[field]);
+                }
             }
         }
     }
