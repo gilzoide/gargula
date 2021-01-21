@@ -1,5 +1,12 @@
 module gargula.node;
 
+version (D_BetterC) {}
+else debug
+{
+    version = HotReload;
+    version = SaveState;
+}
+
 void traverseCallingSelfThenChildren(
     string method,
     string ifFieldTrue = null,
@@ -127,6 +134,13 @@ mixin template Node()
         obj._initialize();
         return obj;
     }
+
+    version (SaveState)
+    {
+        shared static this()
+        {
+            import gargula.gamenode : createNodeFunctions, GameNode;
+            createNodeFunctions[T.stringof] = &GameNode.create!T;
+        }
+    }
 }
-
-

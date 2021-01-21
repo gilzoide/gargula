@@ -23,27 +23,6 @@ extern(C):
     }
 }
 
-package alias initializeMethod = void delegate();
-package alias frameMethod = void delegate();
-package alias destroyMethod = void function(void*);
-package struct GameObject
-{
-    void* object;
-    frameMethod frame;
-    destroyMethod destroy;
-    version (HotReload)
-    {
-        initializeMethod initialize;
-        string typeName;
-    }
-    version (SaveState)
-    {
-        import std.json : JSONValue;
-        alias serializeMethod = JSONValue function(void*);
-        serializeMethod serialize;
-    }
-}
-
 struct GameConfig
 {
     /// Max number of objects at a time
@@ -87,6 +66,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 {
     import betterclist : List;
 
+    import gargula.gamenode : GameNode;
     import gargula.resource : FontResource, TextureResource;
     import gargula.builtin : SpriteTemplate, SpriteOptions;
 
@@ -100,7 +80,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     Color clearColor = _config.clearColor;
 
     /// Dynamic list of root game objects
-    package List!(GameObject, N) rootObjects;
+    package List!(GameNode, N) rootObjects;
 
     // Resource Flyweights
     alias Texture = TextureResource!(textures);
@@ -114,12 +94,12 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     version (HotReload)
     {
         import gargula.hotreload : HotReload;
-        private HotReload!(typeof(this)) hotreload;
+        package HotReload!GameTemplate hotreload;
     }
     version (SaveState)
     {
         import gargula.savestate : SaveState;
-        private SaveState!(typeof(this)) saveState;
+        package SaveState!GameTemplate saveState;
     }
 
     this(const string[] args)
@@ -167,9 +147,9 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     /// `T` must have a `create` method (like Nodes do).
     T* create(T)()
     {
-        typeof(return) object = T.create();
-        add(object);
-        return object;
+        auto node = GameNode.create!T();
+        addGameNode(node);
+        return cast(T*) node.object;
     }
 
     /// Add an object to root list.
@@ -177,30 +157,17 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     in { assert(object != null, "Trying to add a null object to Game"); }
     do
     {
-        frameMethod _frame = &object._frame;
-        static if (__traits(compiles, &.destroy!(false, T)))
-        {
-            destroyMethod _destroy = cast(destroyMethod) &.destroy!(false, T);
-        }
-        else
-        {
-            destroyMethod _destroy = cast(destroyMethod) &.destroy!(T);
-        }
-        auto gameObject = GameObject(object, _frame, _destroy);
-        version (HotReload)
-        {
-            gameObject.initialize = &object._initialize;
-            gameObject.typeName = T.stringof;
-        }
-        version (SaveState)
-        {
-            import gargula.savestate : serialize;
-            gameObject.serialize = cast(GameObject.serializeMethod) &serialize!(T);
-        }
-        rootObjects.pushBack(gameObject);
+        GameNode node = object;
+        addGameNode(node);
     }
 
-    private void destroyRemainingObjects()
+    package GameNode addGameNode(return GameNode node)
+    {
+        rootObjects.push(node);
+        return node;
+    }
+
+    package void destroyRemainingObjects()
     {
         foreach (ref o; rootObjects)
         {
@@ -229,6 +196,11 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     /// Run main loop
     void run()
     {
+        version (SaveState)
+        {
+            saveState.initialize(this);
+        }
+
         SetTargetFPS(_config.targetFPS);
         scope(exit)
         {
@@ -283,9 +255,4 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             }
         }
     }
-}
-
-unittest
-{
-    alias Game = GameTemplate!();
 }
