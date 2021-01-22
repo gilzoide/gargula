@@ -8,11 +8,16 @@ import flyweightbyid;
 
 import gargula.log : Log;
 
-enum skipSerialization(T) = is(T : Flyweight!Args, Args...) || is(T : U*, U);
-enum skipSerialization(T, string field) = (is(T == struct) || is(T == class))
+enum skipSerialization(T) =
+    is(T : U*, U)
+    || is(T : U function(Args), U, Args...)
+    || is(T : U delegate(Args), U, Args...)
+    || is(T : Flyweight!Args, Args...);
+enum skipSerialization(T, string field) =
+    (is(T == struct) || is(T == class))
     && __traits(getProtection, __traits(getMember, T, field)).among("private", "protected");
 
-JSONValue serialize(T)(ref T value)
+JSONValue serialize(T, T init = T.init)(ref T value)
 if (!skipSerialization!T)
 {
     static if (is(T == struct) || is(T == class))
@@ -23,9 +28,20 @@ if (!skipSerialization!T)
         {
             static if (!skipSerialization!(T, field))
             {
-                if (__traits(getMember, value, field) != __traits(getMember, T.init, field))
                 {
-                    json[field] = __traits(getMember, value, field).serialize;
+                    const auto currentValue = __traits(getMember, value, field);
+                    enum initValue = __traits(getMember, init, field);
+                    if (currentValue != initValue)
+                    {
+                        static if (__traits(compiles, currentValue.serialize!(typeof(currentValue), initValue)))
+                        {
+                            json[field] = currentValue.serialize!(typeof(currentValue), initValue);
+                        }
+                        else
+                        {
+                            json[field] = currentValue.serialize;
+                        }
+                    }
                 }
             }
         }
