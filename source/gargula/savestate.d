@@ -139,7 +139,7 @@ package struct SaveState(Game)
         if (initialState.length > 0)
         {
             initialSave = initialState;
-            Log.Info("SAVESTATE: initializing game state '%s'", initialState.toStringz);
+            Log.Info("SAVESTATE: initializing game state '%s'", initialState);
             deserializeGameAsText(game, initialState);
         }
         else
@@ -191,7 +191,7 @@ package struct SaveState(Game)
         }
         catch (JSONException ex)
         {
-            Log.Error("SAVESTATE: JSON error on load: %s", ex.toString().toStringz);
+            Log.Error("SAVESTATE: JSON error on load: %s", ex.toString());
         }
     }
 
@@ -205,11 +205,11 @@ package struct SaveState(Game)
             if (IsKeyPressed(Game.config.debugSaveStateKey))
             {
                 lastSave = serializeGameAsText(game);
-                Log.Info("SAVESTATE: '%s'", lastSave.toStringz);
+                Log.Info("SAVESTATE: '%s'", lastSave);
             }
             if (IsKeyPressed(Game.config.debugLoadStateKey))
             {
-                Log.Info("SAVESTATE: loading '%s'", lastSave.toStringz);
+                Log.Info("SAVESTATE: loading '%s'", lastSave);
                 deserializeGameAsText(game, lastSave);
             }
             if (IsKeyPressed(Game.config.debugReloadKey))

@@ -7,8 +7,6 @@ version (Posix)
 
 package struct HotReload(Game)
 {
-    import std.string : toStringz;
-
     import fswatch : FileChangeEventType, FileWatch;
 
     private static void log(bool prefix = true, Args...)(string fmt, auto ref Args args)
@@ -55,12 +53,12 @@ package struct HotReload(Game)
             else if ((isSomeUpdateEvent && filesToWatch.canFind(event.path))
                     || (filesToWatch.canFind(event.newPath) && event.type == FileChangeEventType.rename))
             {
-                log("File modified '%s'", event.path.toStringz);
+                log("File modified '%s'", event.path);
                 shouldReload = true;
             }
             else
             {
-                log("- '%s' %d", event.path.toStringz, event.type);
+                log("- '%s' %d", event.path, event.type);
             }
         }
 
@@ -72,7 +70,7 @@ package struct HotReload(Game)
         {
             foreach (o; game.rootObjects)
             {
-                log("Reloading '%s'", o.typeName.toStringz);
+                log("Reloading '%s'", o.typeName);
                 o.destroy(o.object);
                 o.initialize();
             }
@@ -83,6 +81,7 @@ package struct HotReload(Game)
     {
         version (Posix)
         {
+            import std.string : toStringz;
             log("Reloading code!");
             string state = game.saveState.serializeGameAsText(game);
             game.cleanup();
