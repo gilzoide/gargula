@@ -5,7 +5,7 @@ version (Posix)
     extern(C) int execl(const char* path, const char* arg0, ...);
 }
 
-struct HotReload(Game)
+package struct HotReload(Game)
 {
     import std.string : toStringz;
 
@@ -84,9 +84,16 @@ struct HotReload(Game)
         version (Posix)
         {
             log("Reloading code!");
+            string state = game.saveState.serializeGameAsText(game);
             game.cleanup();
             destroy(watcher);
-            execl(executableName.toStringz, executableName.toStringz, null);
+            execl(
+                executableName.toStringz,
+                executableName.toStringz,
+                "--load".toStringz,
+                state.toStringz,
+                null
+            );
         }
         else
         {

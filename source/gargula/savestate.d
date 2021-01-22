@@ -134,9 +134,18 @@ package struct SaveState(Game)
     string initialSave;
     string lastSave;
 
-    void initialize(ref Game game)
+    void initialize(ref Game game, string initialState)
     {
-        initialSave = serializeGameAsText(game);
+        if (initialState.length > 0)
+        {
+            initialSave = initialState;
+            Log.Info("SAVESTATE: initializing game state '%s'", initialState.toStringz);
+            deserializeGameAsText(game, initialState);
+        }
+        else
+        {
+            initialSave = serializeGameAsText(game);
+        }
         lastSave = initialSave;
     }
 

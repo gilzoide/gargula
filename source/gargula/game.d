@@ -100,15 +100,17 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         import gargula.savestate : SaveState;
         package SaveState!GameTemplate saveState;
+        package string initialState;
     }
 
-    this(const string[] args)
+    this(string[] args)
     {
         if (args.length > 0)
         {
             import std.string : toStringz;
             processArg0(args[0].toStringz);
         }
+        processArgs(args);
         initWindow();
     }
     this(int argc, const char** argv)
@@ -134,13 +136,28 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         }
     }
 
+    private void processArgs(string[] args)
+    {
+        version (SaveState)
+        {
+            import std.getopt : getopt;
+            getopt(
+                args,
+                "load", &initialState,
+            );
+        }
+    }
+
     private void initWindow()
     {
-        static if (_config.windowFlags > 0)
+        if (!IsWindowReady())
         {
-            SetConfigFlags(_config.windowFlags);
+            static if (_config.windowFlags > 0)
+            {
+                SetConfigFlags(_config.windowFlags);
+            }
+            InitWindow(_config.width, _config.height, cast(const char*) _config.title);
         }
-        InitWindow(_config.width, _config.height, cast(const char*) _config.title);
     }
 
     /// Creates a new object of type `T` and adds it to root list.
@@ -198,7 +215,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         version (SaveState)
         {
-            saveState.initialize(this);
+            saveState.initialize(this, initialState);
         }
 
         SetTargetFPS(_config.targetFPS);
