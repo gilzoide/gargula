@@ -8,6 +8,8 @@ public import gargula.resource.font :
 public import gargula.resource.music :
     unload, play, update, stop, pause, resume, isPlaying,
     setVolume, setPitch, getTimeLength, getTimePlayed;
+public import gargula.resource.rendertexture :
+    unload, size;
 public import gargula.resource.sound :
     unload, update, unload, play, stop, pause, resume,
     playMulti, stopMulti, isPlaying, setVolume, setPitch;

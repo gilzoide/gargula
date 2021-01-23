@@ -25,6 +25,8 @@ extern(C):
 
 struct GameConfig
 {
+    import gargula.resource.rendertexture : RenderTextureOptions;
+
     /// Max number of objects at a time
     size_t maxObjects = 1024;
 
@@ -57,6 +59,9 @@ struct GameConfig
     /// Wave file paths
     string[] waves = [];
 
+    /// RenderTexture Flyweight configurations
+    RenderTextureOptions[] renderTextures = [];
+
     /// Combo keys for triggering reload or save/load state
     int[] debugComboKeys = [KEY_LEFT_CONTROL, KEY_LEFT_SHIFT];
     /// Key that triggers a game reload on debug
@@ -80,6 +85,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     import gargula.gamenode : GameNode;
     import gargula.resource.font : FontResource;
     import gargula.resource.music : MusicResource;
+    import gargula.resource.rendertexture : RenderTextureResource;
     import gargula.resource.sound : SoundResource;
     import gargula.resource.texture : TextureResource;
     import gargula.resource.wave : WaveResource;
@@ -93,6 +99,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     private enum sounds = _config.sounds;
     private enum textures = _config.textures;
     private enum waves = _config.waves;
+    private enum renderTextures = _config.renderTextures;
 
     /// Clear color
     Color clearColor = _config.clearColor;
@@ -103,6 +110,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     // Resource Flyweights
     alias Font = FontResource!(fonts);
     alias Music = MusicResource!(musics);
+    alias RenderTexture = RenderTextureResource!(renderTextures);
     alias Sound = SoundResource!(sounds);
     alias Texture = TextureResource!(textures);
     alias Wave = WaveResource!(waves);
@@ -225,6 +233,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         Font.unloadAll();
         Music.unloadAll();
+        RenderTexture.unloadAll();
         Sound.unloadAll();
         Texture.unloadAll();
         Wave.unloadAll();

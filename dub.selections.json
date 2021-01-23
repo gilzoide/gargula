@@ -1,9 +1,9 @@
 {
 	"fileVersion": 1,
 	"versions": {
-		"betterclist": "0.1.1",
+		"betterclist": "0.2.0",
 		"bettercmath": "0.3.0",
-		"flyweightbyid": "0.1.0",
+		"flyweightbyid": "0.2.0",
 		"fswatch": "0.5.1"
 	}
 }
