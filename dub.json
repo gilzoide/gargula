@@ -49,6 +49,14 @@
 			"targetName": "font_loading",
 			"targetType": "executable",
 			"targetPath": "build"
+		},
+		{
+			"name": "sound_loading",
+			"sourceFiles": ["examples/sound_loading.d"],
+			"copyFiles": ["examples/Uebaaa.wav"],
+			"targetName": "sound_loading",
+			"targetType": "executable",
+			"targetPath": "build"
 		}
 	],
 	"libs": [

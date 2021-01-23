@@ -78,8 +78,11 @@ sources = files(
   'source/gargula/node.d',
   'source/gargula/package.d',
   'source/gargula/resource/font.d',
+  'source/gargula/resource/music.d',
   'source/gargula/resource/package.d',
+  'source/gargula/resource/sound.d',
   'source/gargula/resource/texture.d',
+  'source/gargula/resource/wave.d',
   'source/gargula/savestate.d',
   'source/gargula/wrapper/raylib.d',
 )

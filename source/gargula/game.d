@@ -27,8 +27,14 @@ struct GameConfig
 {
     /// Max number of objects at a time
     size_t maxObjects = 1024;
+
+    /// Config flags for window
+    uint windowFlags = 0;
+    /// Whether Audio should be initialized along with Window
+    bool initAudio = true;
     /// Whether FPS should be shown on debug builds
     bool showDebugFPS = true;
+
     /// Initial window width
     int width = 800;
     /// Initial window height
@@ -39,12 +45,17 @@ struct GameConfig
     string title = "Title";
     /// Default clear color, may be changed at runtime on GameTemplate instance
     Color clearColor = RAYWHITE;
-    /// Texture file paths
-    string[] textures = [];
+
     /// Font file paths
     string[] fonts = [];
-    /// Config flags for window
-    uint windowFlags = 0;
+    /// Music file paths
+    string[] musics = [];
+    /// Sound file paths
+    string[] sounds = [];
+    /// Texture file paths
+    string[] textures = [];
+    /// Wave file paths
+    string[] waves = [];
 
     /// Combo keys for triggering reload or save/load state
     int[] debugComboKeys = [KEY_LEFT_CONTROL, KEY_LEFT_SHIFT];
@@ -67,14 +78,17 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     import betterclist : List;
 
     import gargula.gamenode : GameNode;
-    import gargula.resource : FontResource, TextureResource;
+    import gargula.resource : FontResource, MusicResource, SoundResource, TextureResource, WaveResource;
     import gargula.builtin : SpriteTemplate, SpriteOptions;
 
     /// Game configuration
     enum config = _config;
     private enum N = _config.maxObjects;
-    private enum textures = _config.textures;
     private enum fonts = _config.fonts;
+    private enum musics = _config.musics;
+    private enum sounds = _config.sounds;
+    private enum textures = _config.textures;
+    private enum waves = _config.waves;
 
     /// Clear color
     Color clearColor = _config.clearColor;
@@ -83,8 +97,11 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     package List!(GameNode, N) rootObjects;
 
     // Resource Flyweights
-    alias Texture = TextureResource!(textures);
     alias Font = FontResource!(fonts);
+    alias Music = MusicResource!(musics);
+    alias Sound = SoundResource!(sounds);
+    alias Texture = TextureResource!(textures);
+    alias Wave = WaveResource!(waves);
     // Nodes that depend on resources
     alias Sprite = SpriteTemplate!(Texture);
     alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedPivot);
@@ -157,6 +174,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
                 SetConfigFlags(_config.windowFlags);
             }
             InitWindow(_config.width, _config.height, cast(const char*) _config.title);
+            static if (_config.initAudio)
+            {
+                InitAudioDevice();
+            }
         }
     }
 
@@ -198,7 +219,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     private void unloadFlyweights()
     {
         Font.unloadAll();
+        Music.unloadAll();
+        Sound.unloadAll();
         Texture.unloadAll();
+        Wave.unloadAll();
     }
 
     package void cleanup()
@@ -207,6 +231,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         // Destroying all objects should suffice to destroy remaining
         // Flyweight instances, but just to be sure...
         unloadFlyweights();
+        static if (_config.initAudio)
+        {
+            CloseAudioDevice();
+        }
         CloseWindow();
     }
 
