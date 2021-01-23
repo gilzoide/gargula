@@ -79,7 +79,7 @@ import bettercmath.vector : _Vector = Vector;
 import bettercmath.matrix : _Matrix = Matrix;
 import bettercmath.box : _BoundingBox = BoundingBox, BoundingBoxOptions;
 
-extern (C):
+extern (C) @nogc nothrow:
 
 // Required for: va_list - Only used by TraceLogCallback
 

@@ -1,7 +1,7 @@
 #!/bin/sh
 
 script_root=$(dirname $(realpath $0))
-project_root="$script_root"
+project_root="$script_root/.."
 
 raylib_h="$project_root/subprojects/raylib/src/raylib.h"
 raylib_d="$project_root/source/gargula/wrapper/raylib.d"
@@ -28,6 +28,9 @@ sedscript=$(echo '
 /^struct Color/,/^}/c   alias Color = _Vector!(ubyte, 4);
 /^struct Rectangle/,/^}/c  alias Rectangle = _BoundingBox!(float, 2, BoundingBoxOptions.storeSize);
 /^struct BoundingBox/,/^}/c  alias BoundingBox = _BoundingBox!(float, 3);
+
+# Add "@nogc nothrow" function attributes
+s/^(extern \(C\))/\1 @nogc nothrow/
 
 # Fix initial float values as 0 instead of NaN
 s/^(\s+float[^*][^;]+);/\1 = 0;/
