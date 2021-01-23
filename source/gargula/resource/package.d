@@ -1,5 +1,8 @@
 module gargula.resource;
 
+public import gargula.resource.audiostream :
+    update, close, isProcessed, play, pause, resume,
+    isPlaying, stop, setVolume, setPitch;
 public import gargula.resource.font :
     unload, drawText, measureText, getGlyphIndex;
 public import gargula.resource.music :
@@ -14,7 +17,7 @@ public import gargula.resource.texture :
 public import gargula.resource.wave :
     unload, loadSound;
 
-/// Toggle playing audio objects, works for Sound and Music
+/// Toggle playing audio objects, works for Sound, Music and AudioStream
 void toggle(T)(T audioObject)
 {
     if (isPlaying(audioObject))
