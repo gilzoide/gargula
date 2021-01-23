@@ -78,7 +78,11 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     import betterclist : List;
 
     import gargula.gamenode : GameNode;
-    import gargula.resource : FontResource, MusicResource, SoundResource, TextureResource, WaveResource;
+    import gargula.resource.font : FontResource;
+    import gargula.resource.music : MusicResource;
+    import gargula.resource.sound : SoundResource;
+    import gargula.resource.texture : TextureResource;
+    import gargula.resource.wave : WaveResource;
     import gargula.builtin : MusicStreamTemplate, SpriteTemplate, SpriteOptions;
 
     /// Game configuration

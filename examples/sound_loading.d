@@ -26,12 +26,11 @@ struct Scene
         // and reused afterwards. Non identifier characters are converted
         // to underscores: "Uebaaa.wav" -> "Uebaaa_wav"
         sound = Game.Sound.Uebaaa_wav;
-        PlaySound(sound);
     }
 
     void update()
     {
-        if (IsKeyPressed(KEY_SPACE)) PlaySound(sound);
+        if (IsKeyPressed(KEY_SPACE)) sound.play();
     }
 
     void draw()

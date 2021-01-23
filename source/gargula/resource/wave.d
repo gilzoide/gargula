@@ -15,18 +15,24 @@ template WaveResource(string[] _files)
         return LoadWave(cast(const char*) files[id]);
     }
 
-    void unload(ref Wave tex)
-    {
-        UnloadWave(tex);
-        tex = Wave.init;
-    }
-
     alias WaveResource = Flyweight!(
         Wave,
         load,
-        unload,
+        unload!Wave,
         files,
         FlyweightOptions.gshared
     );
 }
 
+/// Unload wave data
+void unload(T : Wave)(ref T wave)
+{
+    UnloadWave(wave);
+    wave = T.init;
+}
+
+/// Load sound from wave data
+Sound loadSound(T : Wave)(T wave)
+{
+    return LoadSoundFromWave(wave);
+}
