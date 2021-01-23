@@ -1,6 +1,7 @@
 module gargula.builtin.sprite;
 
 import gargula.node;
+import gargula.resource.texture;
 import gargula.wrapper.raylib;
 
 enum SpriteOptions
@@ -45,9 +46,9 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
         Vector2 pivot = 0.5;
     }
 
-    Vector2 size() const pure
+    Vector2 size() const
     {
-        return Vector2(texture.width, texture.height);
+        return texture.size;
     }
 
     void draw()
@@ -55,7 +56,7 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
         auto sourceRect = Rectangle(Vector2(0), size);
         auto destRect = Rectangle(position, scale * size);
         auto origin = pivot * size * scale;
-        DrawTexturePro(texture, sourceRect, destRect, origin, rotation, tintColor);
+        texture.draw(sourceRect, destRect, origin, rotation, tintColor);
     }
 }
 

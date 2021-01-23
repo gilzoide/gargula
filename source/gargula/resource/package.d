@@ -1,13 +1,16 @@
 module gargula.resource;
 
-//public import gargula.resource.font;
+public import gargula.resource.font :
+    unload, drawText, measureText, getGlyphIndex;
 public import gargula.resource.music :
-    play, update, stop, pause, resume, isPlaying,
+    unload, play, update, stop, pause, resume, isPlaying,
     setVolume, setPitch, getTimeLength, getTimePlayed;
 public import gargula.resource.sound :
-    update, unload, play, stop, pause, resume, playMulti,
-    stopMulti, isPlaying, setVolume, setPitch;
-//public import gargula.resource.texture;
+    unload, update, unload, play, stop, pause, resume,
+    playMulti, stopMulti, isPlaying, setVolume, setPitch;
+public import gargula.resource.texture :
+    unload, update, getData, genMipmaps, setFilter,
+    setWrap, draw, size;
 public import gargula.resource.wave :
     unload, loadSound;
 

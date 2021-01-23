@@ -30,13 +30,13 @@ struct Scene
 
     void draw()
     {
-        const char* msg = "Loaded Font!";
+        enum msg = "Loaded Font!";
         immutable float spacing = 2;
         immutable Vector2 textPosition = [
-            Game.config.width / 2 - MeasureTextEx(font, msg, font.baseSize, spacing).x / 2,
+            Game.config.width / 2 - font.measureText(msg, font.baseSize, spacing).x / 2,
             Game.config.height / 2 - font.baseSize / 2,
         ];
-        DrawTextEx(font, msg, textPosition, font.baseSize, spacing, BLACK);
+        font.drawText(msg, textPosition, font.baseSize, spacing, BLACK);
     }
 }
 
