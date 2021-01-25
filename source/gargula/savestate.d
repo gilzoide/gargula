@@ -222,14 +222,14 @@ package struct SaveState(Game)
     string serializeGameAsText(ref Game game)
     {
         JSONValue value = serializeGame(game);
-        return value.toPrettyString();
+        return value.toPrettyString(JSONOptions.specialFloatLiterals);
     }
 
     void deserializeGameAsText(ref Game game, string jsonText)
     {
         try
         {
-            JSONValue json = parseJSON(jsonText);
+            JSONValue json = parseJSON(jsonText, JSONOptions.specialFloatLiterals);
             deserializeGame(game, json);
         }
         catch (JSONException ex)
