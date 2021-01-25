@@ -7,6 +7,7 @@ import gargula.wrapper.raylib;
 template SoundResource(string[] _files)
 {
     immutable static string[] files = _files;
+    enum filenames = _files;
 
     Sound load(uint id)
     in { assert(id < files.length); }
@@ -15,11 +16,11 @@ template SoundResource(string[] _files)
         return LoadSound(cast(const char*) files[id]);
     }
 
-    alias SoundResource = Flyweight!(
+    alias Flyweight = .Flyweight!(
         Sound,
         load,
         unload!Sound,
-        files,
+        filenames,
         FlyweightOptions.gshared
     );
 }

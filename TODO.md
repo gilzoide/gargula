@@ -9,7 +9,7 @@
 [ ] SpriteSheets/AnimatedSprites
 [X] Font resources
 [ ] Labels (text node)
-[ ] RenderTexture resources
+[x] RenderTexture resources
 [ ] ScissorMode node
 [ ] TraceLog level configuration
 [ ] Design how multithread could work?

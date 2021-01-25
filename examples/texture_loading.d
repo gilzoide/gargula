@@ -5,7 +5,7 @@ enum GameConfig gameConfig = {
     // Texture files declared here are stored in a Flyweight instance
     // and be reference counted/automatically unloaded when not needed
     textures: [
-        "oi.png",
+        {"oi.png", mipmaps: true},
     ],
 };
 alias Game = GameTemplate!(gameConfig);

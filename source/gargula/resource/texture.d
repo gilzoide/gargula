@@ -1,25 +1,55 @@
 module gargula.resource.texture;
 
+import betterclist;
 import flyweightbyid;
 
 import gargula.wrapper.raylib;
 
-template TextureResource(string[] _files)
+/// Options for imported Textures.
+struct TextureOptions
 {
-    static immutable string[] files = _files;
+    /// File name.
+    string filename;
+    /// Whether mipmaps should be created on load.
+    bool mipmaps = false;
+    /// Filter mode.
+    int filterMode = -1;
+    /// Wrap mode.
+    int wrapMode = -1;
+}
+
+template TextureResource(TextureOptions[] _options)
+{
+    import std.algorithm : map;
+    static immutable TextureOptions[] options = _options;
+    enum filenames = list!(_options[].map!"a.filename");
 
     Texture load(uint id)
-    in { assert(id < files.length); }
+    in { assert(id < _options.length); }
     do
     {
-        return LoadTexture(cast(const char*) files[id]);
+        const auto option = options[id];
+        Texture tex = LoadTexture(cast(const char*) option.filename);
+        if (option.mipmaps)
+        {
+            tex.genMipmaps();
+        }
+        if (option.filterMode != TextureOptions.init.filterMode)
+        {
+            tex.setFilter(option.filterMode);
+        }
+        if (option.wrapMode != TextureOptions.init.wrapMode)
+        {
+            tex.setWrap(option.wrapMode);
+        }
+        return tex;
     }
 
-    alias TextureResource = Flyweight!(
+    alias Flyweight = .Flyweight!(
         Texture,
         load,
         unload!Texture,
-        files,
+        filenames,
         FlyweightOptions.gshared
     );
 }
@@ -49,9 +79,9 @@ Image getData(T : Texture)(T texture)
 }
 
 /// Generate GPU mipmaps for a texture
-void genMipmaps(T : Texture)(T texture)
+void genMipmaps(T : Texture)(ref T texture)
 {
-    GenTextureMipmaps(texture);
+    GenTextureMipmaps(&texture);
 }
 
 /// Set texture scaling filter mode

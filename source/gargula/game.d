@@ -26,6 +26,7 @@ extern(C):
 struct GameConfig
 {
     import gargula.resource.rendertexture : RenderTextureOptions;
+    import gargula.resource.texture : TextureOptions;
 
     /// Max number of objects at a time
     size_t maxObjects = 1024;
@@ -55,7 +56,7 @@ struct GameConfig
     /// Sound file paths
     string[] sounds = [];
     /// Texture file paths
-    string[] textures = [];
+    TextureOptions[] textures = [];
     /// Wave file paths
     string[] waves = [];
 
@@ -108,12 +109,12 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     package List!(GameNode, N) rootObjects;
 
     // Resource Flyweights
-    alias Font = FontResource!(fonts);
-    alias Music = MusicResource!(musics);
+    alias Font = FontResource!(fonts).Flyweight;
+    alias Music = MusicResource!(musics).Flyweight;
     alias RenderTexture = RenderTextureResource!(renderTextures);
-    alias Sound = SoundResource!(sounds);
-    alias Texture = TextureResource!(textures);
-    alias Wave = WaveResource!(waves);
+    alias Sound = SoundResource!(sounds).Flyweight;
+    alias Texture = TextureResource!(textures).Flyweight;
+    alias Wave = WaveResource!(waves).Flyweight;
     // Nodes that depend on resources
     alias MusicStream = MusicStreamTemplate!(Music);
     alias Sprite = SpriteTemplate!(Texture);
@@ -161,7 +162,15 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
             version (HotReload)
             {
-                hotreload.initialize(".", GetFileName(arg0), textures, fonts);
+                hotreload.initialize(
+                    ".",
+                    GetFileName(arg0),
+                    FontResource!(fonts).filenames,
+                    MusicResource!(musics).filenames,
+                    SoundResource!(sounds).filenames,
+                    TextureResource!(textures).filenames,
+                    WaveResource!(waves).filenames,
+                );
             }
         }
     }

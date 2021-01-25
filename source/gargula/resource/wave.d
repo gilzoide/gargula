@@ -7,6 +7,7 @@ import gargula.wrapper.raylib;
 template WaveResource(string[] _files)
 {
     immutable static string[] files = _files;
+    enum filenames = _files;
 
     Wave load(uint id)
     in { assert(id < files.length); }
@@ -15,11 +16,11 @@ template WaveResource(string[] _files)
         return LoadWave(cast(const char*) files[id]);
     }
 
-    alias WaveResource = Flyweight!(
+    alias Flyweight = .Flyweight!(
         Wave,
         load,
         unload!Wave,
-        files,
+        filenames,
         FlyweightOptions.gshared
     );
 }

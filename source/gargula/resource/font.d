@@ -9,6 +9,7 @@ import gargula.wrapper.raylib;
 template FontResource(string[] _files)
 {
     immutable static string[] files = _files;
+    enum filenames = _files;
 
     Font load(uint id)
     in { assert(id < files.length); }
@@ -17,11 +18,11 @@ template FontResource(string[] _files)
         return LoadFont(cast(const char*) files[id]);
     }
 
-    alias FontResource = Flyweight!(
+    alias Flyweight = .Flyweight!(
         Font,
         load,
         unload!Font,
-        files,
+        filenames,
         FlyweightOptions.gshared
     );
 }
