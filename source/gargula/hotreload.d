@@ -25,7 +25,7 @@ package struct HotReload(Game)
         executableName = to!string(exename);
         filesToWatch = join(fileLists);
 
-        log("Watching files");
+        log("Watching files '%s'", exename);
         foreach (file; filesToWatch)
         {
             log!false("    > '%s'", file);
@@ -96,13 +96,13 @@ package struct HotReload(Game)
                 if (res)
                 {
                     import core.stdc.stdlib : exit;
-                    perror("Error reloading code!!!");
+                    perror("ERROR: HOTRELOAD: Couldn't reload code");
                     exit(-1);
                 }
             }
             else
             {
-                perror("Cannot exec");
+                perror("ERROR: HOTRELOAD: Cannot exec");
             }
         }
         else
