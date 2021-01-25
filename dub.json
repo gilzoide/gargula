@@ -64,7 +64,7 @@
 	],
 	"dependencies": {
 		"bettercmath": "~>0.3.0",
-		"betterclist": "~>0.2.0",
+		"betterclist": "~>0.2.1",
 		"flyweightbyid": "~>0.2.0",
 		"fswatch": "~>0.5.1"
 	},

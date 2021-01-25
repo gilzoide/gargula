@@ -20,7 +20,7 @@ struct RenderTextureOptions
 template RenderTextureResource(RenderTextureOptions[] _options)
 {
     import std.algorithm : map;
-    static immutable Vector2i[] sizes = list!(_options[].map!"a.size")[];
+    static immutable auto sizes = list!(_options[].map!"a.size");
 
     RenderTexture load(uint id)
     in { assert(id < _options.length); }
@@ -34,7 +34,7 @@ template RenderTextureResource(RenderTextureOptions[] _options)
         RenderTexture,
         load,
         unload!RenderTexture,
-        list!(_options[].map!"a.name"()),
+        list!(_options[].map!"a.name"),
         FlyweightOptions.gshared
     );
 }
