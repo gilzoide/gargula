@@ -56,6 +56,15 @@ JSONValue serialize(T, T init = T.init)(ref T value)
     {
         return value.toJSON;
     }
+    else static if (is(T : U[], U))
+    {
+        JSONValue[] json = new JSONValue[value.length];
+        foreach (i, v; value)
+        {
+            json[i] = serialize(v);
+        }
+        return JSONValue(json);
+    }
     else static if (is(T == struct) || is(T == class))
     {
         import std.traits : FieldNameTuple;
@@ -93,6 +102,14 @@ void deserializeInto(T)(T* value, const ref JSONValue json)
     {
         value.fromJSON(json);
     }
+    else static if (is(T : U[], U))
+    {
+        import std.algorithm : min;
+        foreach (i; 0 .. min(json.array.length, value.length))
+        {
+            deserializeInto!U(&(*value)[i], json.array[i]);
+        }
+    }
     else static if (is(T == struct) || is(T == class))
     {
         import std.traits : FieldNameTuple;
@@ -105,14 +122,6 @@ void deserializeInto(T)(T* value, const ref JSONValue json)
                     deserializeInto(&__traits(getMember, value, field), json.object[field]);
                 }
             }
-        }
-    }
-    else static if (is(T : U[N], U, size_t N))
-    {
-        import std.algorithm : min;
-        foreach (i; 0 .. min(json.array.length, N))
-        {
-            deserializeInto!U(&(*value)[i], json.array[i]);
         }
     }
     else
