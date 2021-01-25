@@ -1,10 +1,5 @@
 module gargula.hotreload;
 
-version (Posix)
-{
-    extern(C) int execl(const char* path, const char* arg0, ...);
-}
-
 package struct HotReload(Game)
 {
     import fswatch : FileChangeEventType, FileWatch;
@@ -33,7 +28,7 @@ package struct HotReload(Game)
         log("Watching files");
         foreach (file; filesToWatch)
         {
-            log!false("    > '%s'", file.ptr);
+            log!false("    > '%s'", file);
         }
     }
 
@@ -56,17 +51,17 @@ package struct HotReload(Game)
                 log("File modified '%s'", event.path);
                 shouldReload = true;
             }
-            else
-            {
-                log("- '%s' %d", event.path, event.type);
-            }
+            //else
+            //{
+                //log("- '%s' %d", event.path, event.type);
+            //}
         }
 
         if (shouldReloadCode)
         {
             reloadCode(game);
         }
-        if (shouldReload)
+        else if (shouldReload)
         {
             foreach (o; game.rootObjects)
             {
@@ -81,18 +76,34 @@ package struct HotReload(Game)
     {
         version (Posix)
         {
+            import core.sys.posix.unistd : access, execl, X_OK;
+            import core.stdc.stdio : perror;
             import std.string : toStringz;
-            log("Reloading code!");
-            string state = game.saveState.serializeGameAsText(game);
-            game.cleanup();
-            destroy(watcher);
-            execl(
-                executableName.toStringz,
-                executableName.toStringz,
-                "--load".toStringz,
-                state.toStringz,
-                null
-            );
+            auto executableNameZ = executableName.toStringz;
+            if (access(executableNameZ, X_OK) == 0)
+            {
+                log("Reloading code!");
+                string state = game.saveState.serializeGameAsText(game);
+                game.cleanup();
+                destroy(watcher);
+                const int res = execl(
+                    executableNameZ,
+                    executableNameZ,
+                    "--load".toStringz,
+                    state.toStringz,
+                    null
+                );
+                if (res)
+                {
+                    import core.stdc.stdlib : exit;
+                    perror("Error reloading code!!!");
+                    exit(-1);
+                }
+            }
+            else
+            {
+                perror("Cannot exec");
+            }
         }
         else
         {
