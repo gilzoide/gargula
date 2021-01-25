@@ -27,11 +27,19 @@ enum skipSerialization(T) = false
     || is(T : Texture)
     || is(T : Wave)
     ;
-enum skipSerialization(T, string field) = false
-    || skipSerialization!(typeof(__traits(getMember, T, field)))
-    || __traits(getProtection, __traits(getMember, T, field)).among("private", "protected")
-    || hasUDA!(__traits(getMember, T, field), SkipState)
-    ;
+template skipSerialization(T, string field)
+{
+    static if (__traits(compiles, __traits(getMember, T, field)))
+    {
+        alias member = __traits(getMember, T, field);
+        enum skipSerialization = .skipSerialization!(typeof(member)) || hasUDA!(member, SkipState);
+    }
+    else
+    {
+        // Field is not accessible, skip
+        enum skipSerialization = true;
+    }
+}
 
 JSONValue serialize(T, T init = T.init)(ref T value)
 if (!skipSerialization!T)
