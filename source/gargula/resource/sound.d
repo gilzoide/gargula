@@ -26,7 +26,7 @@ template SoundResource(string[] _files)
 }
 
 /// Update sound buffer with new data
-void update(T : Sound)(T sound, void[] data)
+void update(T : Sound)(ref T sound, void[] data)
 {
     UpdateSound(sound, data.ptr, data.length);
 }
@@ -39,55 +39,55 @@ void unload(T : Sound)(ref T sound)
 }
 
 /// Play a sound
-void play(T : Sound)(T sound)
+void play(T : Sound)(ref T sound)
 {
     PlaySound(sound);
 }
 
 /// Stop playing a sound
-void stop(T : Sound)(T sound)
+void stop(T : Sound)(ref T sound)
 {
     StopSound(sound);
 }
 
 /// Pause a sound
-void pause(T : Sound)(T sound)
+void pause(T : Sound)(ref T sound)
 {
     PauseSound(sound);
 }
 
 /// Resume a paused sound
-void resume(T : Sound)(T sound)
+void resume(T : Sound)(ref T sound)
 {
     ResumeSound(sound);
 }
 
 /// Play a sound (using multichannel buffer pool)
-void playMulti(T : Sound)(T sound)
+void playMulti(T : Sound)(ref T sound)
 {
     PlaySoundMulti(sound);
 }
 
 /// Stop any sound playing (using multichannel buffer pool)
-void stopMulti(T : Sound)(T sound)
+void stopMulti(T : Sound)(ref T sound)
 {
     StopSoundMulti(sound);
 }
 
 /// Check if a sound is currently playing
-bool isPlaying(T : Sound)(T sound)
+bool isPlaying(T : Sound)(ref T sound)
 {
     return IsSoundPlaying(sound);
 }
 
 /// Set volume for a sound (1.0 is max level)
-void setVolume(T : Sound)(T sound, float volume)
+void setVolume(T : Sound)(ref T sound, float volume)
 {
     SetSoundVolume(sound, volume);
 }
 
 /// Set pitch for a sound (1.0 is base level)
-void setPitch(T : Sound)(T sound, float pitch)
+void setPitch(T : Sound)(ref T sound, float pitch)
 {
     SetSoundPitch(sound, pitch);
 }

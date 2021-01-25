@@ -35,34 +35,34 @@ void unload(T : Font)(ref T font)
 }
 
 /// Draw text using font and additional parameters
-void drawText(T : Font)(T font, string text, Vector2 position, float fontSize, float spacing, Color tint)
+void drawText(T : Font)(ref T font, string text, Vector2 position, float fontSize, float spacing, Color tint)
 {
     DrawTextEx(font, text.toStringz, position, fontSize, spacing, tint);
 }
 /// Draw text using font inside rectangle limits
-void drawText(T : Font)(T font, string text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
+void drawText(T : Font)(ref T font, string text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint)
 {
     DrawTextRec(font, text.toStringz, rec, fontSize, spacing, wordWrap, tint);
 }
 /// Draw text using font inside rectangle limits with support for text selection
-void drawText(T : Font)(T font, string text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint)
+void drawText(T : Font)(ref T font, string text, Rectangle rec, float fontSize, float spacing, bool wordWrap, Color tint, int selectStart, int selectLength, Color selectTint, Color selectBackTint)
 {
     DrawTextRecEx(font, text.toStringz, rec, fontSize, spacing, wordWrap, tint, selectStart, selectLength, selectTint, selectBackTint);
 }
 /// Draw one character (codepoint)
-void drawText(T : Font)(T font, int codepoint, Vector2 position, float fontSize, Color tint)
+void drawText(T : Font)(ref T font, int codepoint, Vector2 position, float fontSize, Color tint)
 {
     DrawTextCodepoint(font, codepoint, position, fontSize, tint);
 }
 
 /// Measure string size for Font
-Vector2 measureText(T : Font)(T font, string text, float fontSize, float spacing)
+Vector2 measureText(T : Font)(ref T font, string text, float fontSize, float spacing)
 {
     return MeasureTextEx(font, text.toStringz, fontSize, spacing);
 }
 
 /// Get index position for a unicode character on font
-int getGlyphIndex(T : Font)(T font, int codepoint)
+int getGlyphIndex(T : Font)(ref T font, int codepoint)
 {
     return GetGlyphIndex(font, codepoint);
 }

@@ -33,7 +33,7 @@ void unload(T : Wave)(ref T wave)
 }
 
 /// Load sound from wave data
-Sound loadSound(T : Wave)(T wave)
+Sound loadSound(T : Wave)(ref T wave)
 {
     return LoadSoundFromWave(wave);
 }

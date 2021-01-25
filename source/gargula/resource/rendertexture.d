@@ -40,13 +40,14 @@ template RenderTextureResource(RenderTextureOptions[] _options)
 }
 
 /// Unload render texture from GPU memory (VRAM)
-void unload(T : RenderTexture)(T renderTexture)
+void unload(T : RenderTexture)(ref T renderTexture)
 {
     UnloadRenderTexture(renderTexture);
+    renderTexture = T.init;
 }
 
 /// Get texture size
-Vector2 size(T : RenderTexture)(T renderTexture)
+Vector2 size(T : RenderTexture)(const ref T renderTexture)
 {
     return Vector2(renderTexture.texture.width, renderTexture.texture.height);
 }
