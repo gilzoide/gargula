@@ -156,6 +156,17 @@ void deserializeInto(T)(T* value, const ref JSONValue json)
     }
 }
 
+// Some custom serializations
+JSONValue toJSON(T, T init = T.init)(ref T value)
+if (is(T : Flyweight!Args, Args...))
+{
+    enum initObject = init.object;
+    return value.object.serialize!(typeof(value.object), initObject)();
+}
+void fromJSON(Args...)(Flyweight!Args* value, JSONValue json)
+{
+    deserializeInto(&value.object, json);
+}
 
 package struct SaveState(Game)
 {
