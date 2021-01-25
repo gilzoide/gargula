@@ -6,4 +6,5 @@ public import gargula.log;
 public import gargula.memory;
 public import gargula.node;
 public import gargula.resource;
+public import gargula.savestate : SkipState;
 public import gargula.wrapper.raylib;

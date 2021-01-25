@@ -1,21 +1,37 @@
 module gargula.savestate;
 
-import std.algorithm : among;
+import std.algorithm;
 import std.json;
-import std.string : toStringz;
+import std.string;
+import std.traits;
 
 import flyweightbyid;
 
 import gargula.log : Log;
+import gargula.wrapper.raylib;
 
-enum skipSerialization(T) =
-    is(T : U*, U)
+/// Add this as attribute on fields to be skipped during serialization
+enum SkipState;
+
+enum skipSerialization(T) = false
+    // TODO: serialize content pointed to?
+    || is(T : U*, U)
+    // function pointers
     || is(T : U function(Args), U, Args...)
     || is(T : U delegate(Args), U, Args...)
-    || is(T : Flyweight!Args, Args...);
-enum skipSerialization(T, string field) =
-    (is(T == struct) || is(T == class))
-    && __traits(getProtection, __traits(getMember, T, field)).among("private", "protected");
+    // raylib resources
+    || is(T : Font)
+    || is(T : Music)
+    || is(T : RenderTexture)
+    || is(T : Sound)
+    || is(T : Texture)
+    || is(T : Wave)
+    ;
+enum skipSerialization(T, string field) = false
+    || skipSerialization!(typeof(__traits(getMember, T, field)))
+    || __traits(getProtection, __traits(getMember, T, field)).among("private", "protected")
+    || hasUDA!(__traits(getMember, T, field), SkipState)
+    ;
 
 JSONValue serialize(T, T init = T.init)(ref T value)
 if (!skipSerialization!T)
