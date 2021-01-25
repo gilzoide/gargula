@@ -1,6 +1,7 @@
 module gargula.builtin.musicstream;
 
 import gargula.node;
+import gargula.resource.music;
 import gargula.wrapper.raylib;
 
 /// Template for MusicStream objects, use MusicStream and Game.MusicStream instantiations
@@ -12,6 +13,9 @@ struct MusicStreamTemplate(MusicType)
     MusicType music;
     alias music this;
 
+    /// Whether to stop music on Node destruction
+    bool stopAtDestruction = true;
+
     /// Assign Music data directly
     void opAssign(MusicType music)
     {
@@ -22,6 +26,14 @@ struct MusicStreamTemplate(MusicType)
     void update()
     {
         UpdateMusicStream(music);
+    }
+
+    ~this()
+    {
+        if (stopAtDestruction)
+        {
+            music.stop();
+        }
     }
 }
 
