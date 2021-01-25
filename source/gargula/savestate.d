@@ -42,9 +42,21 @@ template skipSerialization(T, string field)
 }
 
 JSONValue serialize(T, T init = T.init)(ref T value)
-if (!skipSerialization!T)
 {
-    static if (is(T == struct) || is(T == class))
+    static if (skipSerialization!T)
+    {
+        JSONValue[string] json;
+        return JSONValue(json);
+    }
+    else static if (__traits(compiles, { JSONValue v = value.toJSON!(T, init); }))
+    {
+        return value.toJSON!(T, init);
+    }
+    else static if (__traits(compiles, { JSONValue v = value.toJSON; }))
+    {
+        return value.toJSON;
+    }
+    else static if (is(T == struct) || is(T == class))
     {
         import std.traits : FieldNameTuple;
         JSONValue[string] json;
@@ -57,14 +69,7 @@ if (!skipSerialization!T)
                     enum initValue = __traits(getMember, init, field);
                     if (currentValue != initValue)
                     {
-                        static if (__traits(compiles, currentValue.serialize!(typeof(currentValue), initValue)))
-                        {
-                            json[field] = currentValue.serialize!(typeof(currentValue), initValue);
-                        }
-                        else
-                        {
-                            json[field] = currentValue.serialize;
-                        }
+                        json[field] = currentValue.serialize!(typeof(currentValue), initValue);
                     }
                 }
             }
@@ -77,22 +82,18 @@ if (!skipSerialization!T)
     }
 }
 
-JSONValue serialize(T)(ref T value)
-if (skipSerialization!T)
-{
-    JSONValue[string] json;
-    return JSONValue(json);
-}
-
 void deserializeInto(T)(T* value, const ref JSONValue json)
-if (!skipSerialization!T)
 {
     if (json.isNull)
     {
         return;
     }
 
-    static if (is(T == struct) || is(T == class))
+    static if (__traits(compiles, value.fromJSON(json)))
+    {
+        value.fromJSON(json);
+    }
+    else static if (is(T == struct) || is(T == class))
     {
         import std.traits : FieldNameTuple;
         static foreach (i, field; FieldNameTuple!T)
@@ -144,14 +145,8 @@ if (!skipSerialization!T)
                 break;
         }
     }
-    //else static assert(false, "Unhandled type " ~ T.stringof);
 }
 
-void deserializeInto(T)(T* value, const ref JSONValue json)
-if (skipSerialization!T)
-{
-    // No-op
-}
 
 package struct SaveState(Game)
 {
