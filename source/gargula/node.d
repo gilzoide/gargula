@@ -121,10 +121,20 @@ mixin template Node()
         broadcast!("initialize", "lateInitialize");
     }
 
-    void _frame()
+    void _update()
     {
         broadcast!("update", "lateUpdate", "active");
+    }
+
+    void _draw()
+    {
         broadcast!("draw", "lateDraw", "visible");
+    }
+
+    void _frame()
+    {
+        _update();
+        _draw();
     }
 
     static T* create()

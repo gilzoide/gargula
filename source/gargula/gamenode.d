@@ -5,17 +5,33 @@ else debug
 {
     version = HotReload;
     version = SaveState;
+    version = Pausable;
 }
 
 struct GameNode
 {
     alias createMethod = void* delegate();
     alias initializeMethod = void delegate();
+    alias updateMethod = void delegate();
+    alias drawMethod = void delegate();
     alias frameMethod = void delegate();
     alias destroyMethod = void function(void*);
 
     void* object;
-    frameMethod frame;
+    version (Pausable)
+    {
+        updateMethod update;
+        drawMethod draw;
+        void frame()
+        {
+            update();
+            draw();
+        }
+    }
+    else
+    {
+        frameMethod frame;
+    }
     destroyMethod destroy;
     version (HotReload)
     {
@@ -40,7 +56,15 @@ struct GameNode
     this(T)(T* object)
     {
         this.object = object;
-        frame = &object._frame;
+        version (Pausable)
+        {
+            update = &object._update;
+            draw = &object._draw;
+        }
+        else
+        {
+            frame = &object._frame;
+        }
         static if (__traits(compiles, &.destroy!(false, T)))
         {
             this.destroy = cast(destroyMethod) &.destroy!(false, T);

@@ -8,6 +8,7 @@ else debug
 {
     version = HotReload;
     version = SaveState;
+    version = Pausable;
 }
 
 version (WebAssembly)
@@ -65,6 +66,10 @@ struct GameConfig
 
     /// Combo keys for triggering reload or save/load state
     int[] debugComboKeys = [KEY_LEFT_CONTROL, KEY_LEFT_SHIFT];
+    /// Key that triggers a game pause/resume on debug
+    int debugPauseKey = KEY_P;
+    /// Key that triggers a single frame advance when game is paused on debug
+    int debugAdvanceFrameKey = KEY_N;
     /// Key that triggers a game reload on debug
     int debugReloadKey = KEY_R;
     /// Key that triggers a save game state on debug
@@ -135,6 +140,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         package SaveState!GameTemplate saveState;
         package string initialState;
     }
+    version (Pausable)
+    {
+        package bool isPaused;
+    }
 
     this(string[] args)
     {
@@ -186,6 +195,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             getopt(
                 args,
                 "load", &initialState,
+                "paused", &isPaused,
             );
         }
     }
@@ -295,9 +305,42 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
 
         ClearBackground(clearColor);
 
-        foreach (o; rootObjects)
+        version (Pausable)
         {
-            o.frame();
+            import std.algorithm : all;
+            import gargula.wrapper.raylib : IsKeyDown, IsKeyPressed;
+
+            bool forceUpdate = false;
+            if (_config.debugComboKeys.all!IsKeyDown)
+            {
+                if (IsKeyPressed(_config.debugPauseKey))
+                {
+                    isPaused = !isPaused;
+                }
+                if (IsKeyPressed(_config.debugAdvanceFrameKey))
+                {
+                    forceUpdate = true;
+                }
+            }
+            foreach (o; rootObjects)
+            {
+                if (!isPaused || forceUpdate)
+                {
+                    o.update();
+                }
+                o.draw();
+            }
+            if (isPaused)
+            {
+                DrawText(cast(const char*) "PAUSED", 0, 20, 20, LIME);
+            }
+        }
+        else
+        {
+            foreach (o; rootObjects)
+            {
+                o.frame();
+            }
         }
 
         static if (_config.showDebugFPS) debug DrawFPS(0, 0);

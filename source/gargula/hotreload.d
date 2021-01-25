@@ -104,6 +104,7 @@ package struct HotReload(Game)
                     executableNameZ,
                     "--load".toStringz,
                     state.toStringz,
+                    game.isPaused ? "--paused".toStringz : null,
                     null
                 );
                 if (res)
