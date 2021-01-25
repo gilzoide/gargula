@@ -63,7 +63,7 @@
 		"raylib"
 	],
 	"dependencies": {
-		"bettercmath": "~>0.3.0",
+		"bettercmath": "~>0.3.1",
 		"betterclist": "~>0.2.1",
 		"flyweightbyid": "~>0.2.0",
 		"fswatch": "~>0.5.1"
