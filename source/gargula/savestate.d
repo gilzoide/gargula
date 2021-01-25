@@ -102,6 +102,10 @@ void deserializeInto(T)(T* value, const ref JSONValue json)
     {
         value.fromJSON(json);
     }
+    else static if (is(T : string))
+    {
+        *value = json.str;
+    }
     else static if (is(T : U[], U))
     {
         import std.algorithm : min;
