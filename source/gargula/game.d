@@ -71,6 +71,8 @@ struct GameConfig
     int debugSaveStateKey = KEY_C;
     /// Key that triggers a load game state on debug
     int debugLoadStateKey = KEY_V;
+    /// Delay to wait before reloading code
+    float debugReloadCodeDelay = 0.5;
 
     /// Returns a Vector2 with window size
     @property Vector2 size() const
@@ -163,6 +165,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             version (HotReload)
             {
                 hotreload.initialize(
+                    this,
                     ".",
                     GetFileName(arg0),
                     FontResource!(fonts).filenames,

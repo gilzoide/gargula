@@ -3,6 +3,8 @@ module gargula.hotreload;
 package struct HotReload(Game)
 {
     import fswatch : FileChangeEventType, FileWatch;
+    
+    import gargula.builtin.tween;
 
     private static void log(bool prefix = true, Args...)(string fmt, auto ref Args args)
     {
@@ -17,7 +19,11 @@ package struct HotReload(Game)
     FileWatch watcher;
     string executableName;
     string[] filesToWatch;
-    void initialize(string baseDir, const char* exename, string[][] fileLists...)
+    TweenCallback!() delay = {
+        duration: Game.config.debugReloadCodeDelay,
+    };
+    bool reloadingCode = false;
+    void initialize(ref Game game, string baseDir, const char* exename, string[][] fileLists...)
     {
         import std.array : join;
         import std.conv : to;
@@ -30,20 +36,31 @@ package struct HotReload(Game)
         {
             log!false("    > '%s'", file);
         }
+
+        delay.endCallback = () {
+            reloadCode(game);
+        };
     }
 
     void update(ref Game game)
     {
-        bool shouldReload = false, shouldReloadCode = false;
+        if (reloadingCode)
+        {
+            delay.update();
+            return;
+        }
+
+
+        bool shouldReload = false;
         foreach (event; watcher.getEvents())
         {
             import std.algorithm : among, canFind;
             auto isSomeUpdateEvent = event.type.among(FileChangeEventType.modify, FileChangeEventType.create);
             if (isSomeUpdateEvent && event.path == executableName)
             {
-                log("Executable modified, will reload symbols");
-                shouldReload = true;
-                shouldReloadCode = true;
+                log("Executable modified, reloading code in %g", delay.duration);
+                reloadingCode = true;
+                return;
             }
             else if ((isSomeUpdateEvent && filesToWatch.canFind(event.path))
                     || (filesToWatch.canFind(event.newPath) && event.type == FileChangeEventType.rename))
@@ -57,11 +74,7 @@ package struct HotReload(Game)
             //}
         }
 
-        if (shouldReloadCode)
-        {
-            reloadCode(game);
-        }
-        else if (shouldReload)
+        if (shouldReload)
         {
             foreach (o; game.rootObjects)
             {
