@@ -41,6 +41,10 @@ struct GameConfig
     bool initAudio = true;
     /// Whether FPS should be shown on debug builds
     bool showDebugFPS = true;
+    /// Log level to set on debug builds
+    int debugLogLevel = LOG_DEBUG;
+    /// Log level to set on release builds
+    int releaseLogLevel = LOG_WARNING;
 
     /// Initial window width
     int width = 800;
@@ -204,6 +208,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         if (!IsWindowReady())
         {
+            debug SetTraceLogLevel(_config.debugLogLevel);
+            else  SetTraceLogLevel(_config.releaseLogLevel);
             static if (_config.windowFlags > 0)
             {
                 SetConfigFlags(_config.windowFlags);
