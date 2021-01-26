@@ -11,6 +11,11 @@
 		},
 		{
 			"name": "betterC",
+			"subConfigurations": {
+				"bettercmath": "betterC",
+				"betterclist": "betterC",
+				"flyweightbyid": "betterC"
+			},
 			"buildOptions": ["betterC"]
 		},
 		{
@@ -63,9 +68,9 @@
 		"raylib"
 	],
 	"dependencies": {
-		"bettercmath": "~>0.3.1",
-		"betterclist": "~>0.2.1",
-		"flyweightbyid": "~>0.2.0",
+		"bettercmath": { "path": "subprojects/bettercmath" },
+		"betterclist": { "path": "subprojects/betterclist" },
+		"flyweightbyid": { "path": "subprojects/flyweightbyid" },
 		"fswatch": "~>0.5.1"
 	},
 	"targetType": "sourceLibrary"
