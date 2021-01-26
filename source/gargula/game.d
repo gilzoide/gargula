@@ -20,11 +20,11 @@ extern(C):
     alias loop_func = void function(void*);
     ///
     void emscripten_set_main_loop_arg(loop_func, void*, int, int);
-    ///
-    void __assert(const char* message, const char* file, int line)
-    {
-        Log.Fatal!"Assertion error @ %s:%d: %s"(file, line, message);
-    }
+}
+
+extern(C) void __assert(const char* message, const char* file, int line)
+{
+    Log.Fatal!"Assertion error @ %s:%d: %s"(file, line, message);
 }
 
 struct GameConfig
@@ -148,8 +148,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         package bool isPaused;
     }
-
-    this(string[] args)
+    version (D_BetterC) {}
+    else this(string[] args)
     {
         if (args.length > 0)
         {
