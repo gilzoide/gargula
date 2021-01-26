@@ -100,7 +100,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     import gargula.resource.sound : SoundResource;
     import gargula.resource.texture : TextureResource;
     import gargula.resource.wave : WaveResource;
-    import gargula.builtin : MusicStreamTemplate, SpriteTemplate, SpriteOptions;
+    import gargula.builtin : MusicStreamTemplate, SpriteVariations;
 
     /// Game configuration
     enum config = _config;
@@ -127,10 +127,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     alias Wave = WaveResource!(waves).Flyweight;
     // Nodes that depend on resources
     alias MusicStream = MusicStreamTemplate!(Music);
-    alias Sprite = SpriteTemplate!(Texture);
-    alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedPivot);
-    alias AASprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned);
-    alias AACenteredSprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
+    mixin SpriteVariations!Texture;
 
     version (HotReload)
     {

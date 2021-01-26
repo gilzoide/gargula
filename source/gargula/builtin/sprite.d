@@ -60,7 +60,12 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
     }
 }
 
-alias Sprite = SpriteTemplate!(Texture);
-alias CenteredSprite = SpriteTemplate!(Texture, SpriteOptions.fixedPivot);
-alias AASprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned);
-alias AACenteredSprite = SpriteTemplate!(Texture, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
+mixin template SpriteVariations(TextureType)
+{
+    import gargula.builtin.sprite : SpriteOptions, SpriteTemplate;
+    alias Sprite = SpriteTemplate!(TextureType);
+    alias CenteredSprite = SpriteTemplate!(TextureType, SpriteOptions.fixedPivot);
+    alias AASprite = SpriteTemplate!(TextureType, SpriteOptions.axisAligned);
+    alias AACenteredSprite = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
+}
+mixin SpriteVariations!Texture;
