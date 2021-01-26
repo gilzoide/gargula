@@ -3,6 +3,7 @@ project('raylib-meson', 'c', 'cpp', 'd')
 cc = meson.get_compiler('c')
 dc = meson.get_compiler('d')
 
+compile_args = []
 link_args = []
 dependencies = []
 
@@ -31,18 +32,22 @@ dependencies += raylib_subproject.dependency('raylib')
 betterclist = subproject('betterclist')
 bettercmath = subproject('bettercmath')
 flyweightbyid = subproject('flyweightbyid')
-fswatch = dependency('fswatch', version: ['>=0.5.1', '<0.6.0'], required: false, method: 'dub')
 
 dependencies += [
   betterclist.get_variable('betterclist_dep'),
   bettercmath.get_variable('bettercmath_dep'),
   flyweightbyid.get_variable('flyweightbyid_dep'),
-  fswatch,
 ]
 
-if not fswatch.found()
-  warning('fswatch not found, hot reloading not supported')
+# DUB dependency
+if get_option('debug') and host_machine.system() != 'emscripten'
+  fswatch = dependency('fswatch', version: ['>=0.5.1', '<0.6.0'], required: false, method: 'dub')
+  dependencies += fswatch
+  if not fswatch.found()
+    warning('fswatch not found, hot reloading not supported')
+  endif
 endif
+
 # General configuration
 if host_machine.system() == 'windows'
   dependencies += [
@@ -56,6 +61,7 @@ elif host_machine.system() == 'linux'
     cc.find_library('dl'),
   ]
 elif host_machine.system() == 'emscripten'
+  compile_args += '--betterC'
   link_args += [
     '-s', 'ENVIRONMENT=web',
     '-s', 'USE_GLFW=3',
@@ -97,6 +103,7 @@ sources = files(
 gargula_dep = declare_dependency(
   sources: sources,
   include_directories: inc_dir,
+  compile_args: compile_args,
   link_args: link_args,
   dependencies: dependencies,
 )
