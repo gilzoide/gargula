@@ -179,18 +179,18 @@ package struct SaveState(Game)
 
     void initialize(ref Game game, string initialState)
     {
+        initialSave = serializeGameAsText(game);
         if (initialState.length > 0)
         {
-            initialSave = initialState;
             log.Info!"initializing game state";
             log.Debug!("%s", false)(initialState);
             deserializeGameAsText(game, initialState);
+            lastSave = initialState;
         }
         else
         {
-            initialSave = serializeGameAsText(game);
+            lastSave = initialSave;
         }
-        lastSave = initialSave;
     }
 
     JSONValue serializeGame(ref Game game)
