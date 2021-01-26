@@ -3,7 +3,6 @@ module gargula.node;
 version (D_BetterC) {}
 else debug
 {
-    version = HotReload;
     version = SaveState;
 }
 

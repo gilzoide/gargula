@@ -3,7 +3,10 @@ module gargula.gamenode;
 version (D_BetterC) {}
 else debug
 {
-    version = HotReload;
+    version (Have_fswatch)
+    {
+        version = HotReload;
+    }
     version = SaveState;
     version = Pausable;
 }
