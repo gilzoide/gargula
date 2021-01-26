@@ -16,57 +16,14 @@
 				"betterclist": "betterC",
 				"flyweightbyid": "betterC"
 			},
+			"excludedSourceFiles": [
+				"source/gargula/hotreload.d",
+				"source/gargula/savestate.d"
+			],
 			"buildOptions": ["betterC"]
-		},
-		{
-			"name": "basic_window",
-			"sourceFiles": ["examples/basic_window.d"],
-			"targetName": "basic_window",
-			"targetType": "executable",
-			"targetPath": "build"
-		},
-		{
-			"name": "keyboard_input",
-			"sourceFiles": ["examples/keyboard_input.d"],
-			"targetName": "keyboard_input",
-			"targetType": "executable",
-			"targetPath": "build"
-		},
-		{
-			"name": "mouse_input",
-			"sourceFiles": ["examples/mouse_input.d"],
-			"targetName": "mouse_input",
-			"targetType": "executable",
-			"targetPath": "build"
-		},
-		{
-			"name": "texture_loading",
-			"sourceFiles": ["examples/texture_loading.d"],
-			"copyFiles": ["examples/oi.png"],
-			"targetName": "texture_loading",
-			"targetType": "executable",
-			"targetPath": "build"
-		},
-		{
-			"name": "font_loading",
-			"sourceFiles": ["examples/font_loading.d"],
-			"copyFiles": ["examples/SatellaRegular.ttf"],
-			"targetName": "font_loading",
-			"targetType": "executable",
-			"targetPath": "build"
-		},
-		{
-			"name": "sound_loading",
-			"sourceFiles": ["examples/sound_loading.d"],
-			"copyFiles": ["examples/Uebaaa.wav"],
-			"targetName": "sound_loading",
-			"targetType": "executable",
-			"targetPath": "build"
 		}
 	],
-	"libs": [
-		"raylib"
-	],
+	"libs": ["raylib"],
 	"dependencies": {
 		"bettercmath": { "path": "subprojects/bettercmath" },
 		"betterclist": { "path": "subprojects/betterclist" },
