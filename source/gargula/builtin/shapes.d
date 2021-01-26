@@ -22,7 +22,7 @@ struct CubeNode
     BoundingBox boundingBox() const
     {
         BoundingBox result;
-        result.start = position;
+        result.origin = position;
         result.size = size;
         return result;
     }
