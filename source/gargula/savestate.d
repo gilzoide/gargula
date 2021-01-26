@@ -2,13 +2,16 @@ module gargula.savestate;
 
 import std.algorithm;
 import std.json;
-import std.string;
 import std.traits;
 
 import flyweightbyid;
 
-import gargula.log : Log;
+import gargula.log : Logger;
 import gargula.wrapper.raylib;
+
+private Logger log = {
+    prefix: "SAVESTATE",
+};
 
 /// Add this as attribute on fields to be skipped during serialization
 enum SkipState;
@@ -150,10 +153,10 @@ void deserializeInto(T)(T* value, const ref JSONValue json)
                 case JSON_TYPE.FLOAT: *value = cast(T) json.floating; break;
             }
             default:
-                Log.Error(
-                    "SAVESTATE: invalid json type '%s' for type '%s'",
-                    to!string(json.type).toStringz,
-                    T.stringof.toStringz
+                log.Error(
+                    "invalid json type '%s' for type '%s'",
+                    to!string(json.type),
+                    T.stringof,
                 );
                 break;
         }
@@ -182,7 +185,8 @@ package struct SaveState(Game)
         if (initialState.length > 0)
         {
             initialSave = initialState;
-            Log.Info("SAVESTATE: initializing game state '%s'", initialState);
+            log.Info("initializing game state");
+            log.Debug!false("%s", initialState);
             deserializeGameAsText(game, initialState);
         }
         else
@@ -234,7 +238,7 @@ package struct SaveState(Game)
         }
         catch (JSONException ex)
         {
-            Log.Error("SAVESTATE: JSON error on load: %s", ex.toString());
+            log.Error("JSON error on load: %s", ex.toString());
         }
     }
 
@@ -248,16 +252,18 @@ package struct SaveState(Game)
             if (IsKeyPressed(Game.config.debugSaveStateKey))
             {
                 lastSave = serializeGameAsText(game);
-                Log.Info("SAVESTATE: '%s'", lastSave);
+                log.Info("state saved");
+                log.Debug!false("%s", lastSave);
             }
             if (IsKeyPressed(Game.config.debugLoadStateKey))
             {
-                Log.Info("SAVESTATE: loading '%s'", lastSave);
                 deserializeGameAsText(game, lastSave);
+                log.Info("state loaded");
+                log.Debug!false("%s", lastSave);
             }
             if (IsKeyPressed(Game.config.debugReloadKey))
             {
-                Log.Info("SAVESTATE: reloading game");
+                log.Info("reloading game");
                 deserializeGameAsText(game, initialSave);
             }
         }

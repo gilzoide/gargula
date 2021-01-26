@@ -61,3 +61,64 @@ struct Log
         Log(LOG_FATAL, fmt, args);
     }
 }
+
+struct Logger
+{
+    string prefix = "";
+
+    /// Log a trace level message, optionally prefixed by `prefix: `
+    void Trace(bool addPrefix = true, Args...)(string fmt, const auto ref Args args)
+    {
+        static if (addPrefix)
+        {
+            fmt = this.prefix ~ ": " ~ fmt;
+        }
+        Log.Trace(fmt, args);
+    }
+    /// Log a debug level message, optionally prefixed by `prefix: `
+    void Debug(bool addPrefix = true, Args...)(string fmt, const auto ref Args args)
+    {
+        static if (addPrefix)
+        {
+            fmt = this.prefix ~ ": " ~ fmt;
+        }
+        Log.Debug(fmt, args);
+    }
+    /// Log an info level message, optionally prefixed by `prefix: `
+    void Info(bool addPrefix = true, Args...)(string fmt, const auto ref Args args)
+    {
+        static if (addPrefix)
+        {
+            fmt = this.prefix ~ ": " ~ fmt;
+        }
+        Log.Info(fmt, args);
+    }
+    /// Log a warning level message, optionally prefixed by `prefix: `
+    void Warning(bool addPrefix = true, Args...)(string fmt, const auto ref Args args)
+    {
+        static if (addPrefix)
+        {
+            fmt = this.prefix ~ ": " ~ fmt;
+        }
+        Log.Warning(fmt, args);
+    }
+    /// Log a error level message, optionally prefixed by `prefix: `
+    void Error(bool addPrefix = true, Args...)(string fmt, const auto ref Args args)
+    {
+        static if (addPrefix)
+        {
+            fmt = this.prefix ~ ": " ~ fmt;
+        }
+        Log.Error(fmt, args);
+    }
+    /// Log a fatal level message, optionally prefixed by `prefix: `
+    void Fatal(bool addPrefix = true, Args...)(string fmt, const auto ref Args args)
+    {
+        static if (addPrefix)
+        {
+            fmt = this.prefix ~ ": " ~ fmt;
+        }
+        Log.Fatal(fmt, args);
+    }
+
+}

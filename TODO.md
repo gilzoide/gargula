@@ -1,5 +1,5 @@
 [ ] 2D and 3D shape nodes
-[ ] Texture resources configuration (mipmaps/filter/wrap)
+[X] Texture resources configuration (mipmaps/filter/wrap)
 [X] Wave/Sound/Music/AudioStream resources
 [ ] Audio nodes
 [ ] Image resources?

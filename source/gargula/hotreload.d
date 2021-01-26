@@ -5,16 +5,11 @@ package struct HotReload(Game)
     import fswatch : FileChangeEventType, FileWatch;
     
     import gargula.builtin.tween;
+    import gargula.log : Logger;
 
-    private static void log(bool prefix = true, Args...)(string fmt, auto ref Args args)
-    {
-        import gargula.log : Log;
-        static if (prefix)
-        {
-            fmt = "HOTRELOAD: " ~ fmt;
-        }
-        Log.Info(fmt, args);
-    }
+    Logger log = {
+        prefix: "HOTRELOAD",
+    };
 
     FileWatch watcher;
     string executableName;
@@ -31,10 +26,10 @@ package struct HotReload(Game)
         executableName = to!string(exename);
         filesToWatch = join(fileLists);
 
-        log("Watching files '%s'", exename);
+        log.Info("Watching files '%s'", exename);
         foreach (file; filesToWatch)
         {
-            log!false("    > '%s'", file);
+            log.Debug!false("    > '%s'", file);
         }
 
         delay.endCallback = () {
@@ -58,14 +53,14 @@ package struct HotReload(Game)
             auto isSomeUpdateEvent = event.type.among(FileChangeEventType.modify, FileChangeEventType.create);
             if (isSomeUpdateEvent && event.path == executableName)
             {
-                log("Executable modified, reloading code in %g", delay.duration);
+                log.Info("Executable modified, reloading code in %g", delay.duration);
                 reloadingCode = true;
                 return;
             }
             else if ((isSomeUpdateEvent && filesToWatch.canFind(event.path))
                     || (filesToWatch.canFind(event.newPath) && event.type == FileChangeEventType.rename))
             {
-                log("File modified '%s'", event.path);
+                log.Info("File modified '%s'", event.path);
                 shouldReload = true;
             }
             //else
@@ -78,7 +73,7 @@ package struct HotReload(Game)
         {
             foreach (o; game.rootObjects)
             {
-                log("Reloading '%s'", o.typeName);
+                log.Info("Reloading '%s'", o.typeName);
                 o.destroy(o.object);
                 o.initialize();
             }
@@ -95,7 +90,7 @@ package struct HotReload(Game)
             auto executableNameZ = executableName.toStringz;
             if (access(executableNameZ, X_OK) == 0)
             {
-                log("Reloading code!");
+                log.Info("Reloading code!");
                 string state = game.saveState.serializeGameAsText(game);
                 game.cleanup();
                 destroy(watcher);
@@ -121,7 +116,7 @@ package struct HotReload(Game)
         }
         else
         {
-            log("Code reloading is not implemented for this platform yet!");
+            log.Info("Code reloading is not implemented for this platform yet!");
         }
     }
 }
