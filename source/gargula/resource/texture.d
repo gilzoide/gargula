@@ -13,9 +13,9 @@ struct TextureOptions
     /// Whether mipmaps should be created on load.
     bool mipmaps = false;
     /// Filter mode.
-    int filterMode = -1;
+    int filter = -1;
     /// Wrap mode.
-    int wrapMode = -1;
+    int wrap = -1;
 }
 
 template TextureResource(TextureOptions[] _options)
@@ -34,13 +34,13 @@ template TextureResource(TextureOptions[] _options)
         {
             tex.genMipmaps();
         }
-        if (option.filterMode != TextureOptions.init.filterMode)
+        if (option.filter != TextureOptions.init.filter)
         {
-            tex.setFilter(option.filterMode);
+            tex.setFilter(option.filter);
         }
-        if (option.wrapMode != TextureOptions.init.wrapMode)
+        if (option.wrap != TextureOptions.init.wrap)
         {
-            tex.setWrap(option.wrapMode);
+            tex.setWrap(option.wrap);
         }
         return tex;
     }
