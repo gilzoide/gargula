@@ -9,9 +9,7 @@ import flyweightbyid;
 import gargula.log : Logger;
 import gargula.wrapper.raylib;
 
-private Logger log = {
-    prefix: "SAVESTATE",
-};
+private Logger!"SAVESTATE" log;
 
 /// Add this as attribute on fields to be skipped during serialization
 enum SkipState;
@@ -153,8 +151,7 @@ void deserializeInto(T)(T* value, const ref JSONValue json)
                 case JSON_TYPE.FLOAT: *value = cast(T) json.floating; break;
             }
             default:
-                log.Error(
-                    "invalid json type '%s' for type '%s'",
+                log.Error!"invalid json type '%s' for type '%s'"(
                     to!string(json.type),
                     T.stringof,
                 );
@@ -185,8 +182,8 @@ package struct SaveState(Game)
         if (initialState.length > 0)
         {
             initialSave = initialState;
-            log.Info("initializing game state");
-            log.Debug!false("%s", initialState);
+            log.Info!"initializing game state";
+            log.Debug!("%s", false)(initialState);
             deserializeGameAsText(game, initialState);
         }
         else
@@ -238,7 +235,7 @@ package struct SaveState(Game)
         }
         catch (JSONException ex)
         {
-            log.Error("JSON error on load: %s", ex.toString());
+            log.Error!"JSON error on load: %s"(ex.toString());
         }
     }
 
@@ -252,18 +249,18 @@ package struct SaveState(Game)
             if (IsKeyPressed(Game.config.debugSaveStateKey))
             {
                 lastSave = serializeGameAsText(game);
-                log.Info("state saved");
-                log.Debug!false("%s", lastSave);
+                log.Info!"state saved";
+                log.Debug!("%s", false)(lastSave);
             }
             if (IsKeyPressed(Game.config.debugLoadStateKey))
             {
                 deserializeGameAsText(game, lastSave);
-                log.Info("state loaded");
-                log.Debug!false("%s", lastSave);
+                log.Info!"state loaded";
+                log.Debug!("%s", false)(lastSave);
             }
             if (IsKeyPressed(Game.config.debugReloadKey))
             {
-                log.Info("reloading game");
+                log.Info!"reloading game";
                 deserializeGameAsText(game, initialSave);
             }
         }

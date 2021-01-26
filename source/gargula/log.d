@@ -1,5 +1,7 @@
 module gargula.log;
 
+import std.string;
+
 import gargula.wrapper.raylib;
 
 /// Logging utilities
@@ -11,13 +13,12 @@ struct Log
     private alias StringToCharP(T) = T;
 
     /// Log a `level` level message, converting `string` values to `const(char)*`
-    static void Log(Args...)(int level, const char* fmt, const auto ref Args args)
+    static void Log(string fmt, Args...)(int level, const auto ref Args args)
     {
         import std.meta : staticMap;
         staticMap!(StringToCharP, Args) result;
         static foreach (i, a; args)
         {
-            import std.string : toStringz;
             static if (__traits(compiles, toStringz(a)))
             {
                 result[i] = toStringz(a);
@@ -27,98 +28,80 @@ struct Log
                 result[i] = a;
             }
         }
-        TraceLog(level, fmt, result);
+        TraceLog(level, cast(const char*) fmt, result);
     }
 
     /// Log a trace level message
-    static void Trace(Args...)(const char* fmt, const auto ref Args args)
+    static void Trace(string fmt, Args...)(const auto ref Args args)
     {
-        Log(LOG_TRACE, fmt, args);
+        Log!fmt(LOG_TRACE, args);
     }
     /// Log a debug level message
-    static void Debug(Args...)(const char* fmt, const auto ref Args args)
+    static void Debug(string fmt, Args...)(const auto ref Args args)
     {
-        Log(LOG_DEBUG, fmt, args);
+        Log!fmt(LOG_DEBUG, args);
     }
     /// Log a info level message
-    static void Info(Args...)(const char* fmt, const auto ref Args args)
+    static void Info(string fmt, Args...)(const auto ref Args args)
     {
-        Log(LOG_INFO, fmt, args);
+        Log!fmt(LOG_INFO, args);
     }
     /// Log a warning level message
-    static void Warning(Args...)(const char* fmt, const auto ref Args args)
+    static void Warning(string fmt, Args...)(const auto ref Args args)
     {
-        Log(LOG_WARNING, fmt, args);
+        Log!fmt(LOG_WARNING, args);
     }
     /// Log an error level message
-    static void Error(Args...)(const char* fmt, const auto ref Args args)
+    static void Error(string fmt, Args...)(const auto ref Args args)
     {
-        Log(LOG_ERROR, fmt, args);
+        Log!fmt(LOG_ERROR, args);
     }
     /// Log a fatal level message
-    static void Fatal(Args...)(const char* fmt, const auto ref Args args)
+    static void Fatal(string fmt, Args...)(const auto ref Args args)
     {
-        Log(LOG_FATAL, fmt, args);
+        Log!fmt(LOG_FATAL, args);
     }
 }
 
-struct Logger
+struct Logger(string _prefix)
 {
-    string prefix = "";
+    enum string prefix = _prefix ~ ": ";
 
     /// Log a trace level message, optionally prefixed by `prefix: `
-    void Trace(bool addPrefix = true, Args...)(const char* fmt, const auto ref Args args)
+    void Trace(string _fmt, bool addPrefix = true, Args...)(const auto ref Args args)
     {
-        static if (addPrefix)
-        {
-            fmt = this.prefix ~ ": " ~ fmt;
-        }
-        Log.Trace(fmt, args);
+        enum fmt = (addPrefix ? prefix ~ _fmt : _fmt);
+        Log.Trace!fmt(args);
     }
     /// Log a debug level message, optionally prefixed by `prefix: `
-    void Debug(bool addPrefix = true, Args...)(const char* fmt, const auto ref Args args)
+    void Debug(string _fmt, bool addPrefix = true, Args...)(const auto ref Args args)
     {
-        static if (addPrefix)
-        {
-            fmt = this.prefix ~ ": " ~ fmt;
-        }
-        Log.Debug(fmt, args);
+        enum fmt = (addPrefix ? prefix ~ _fmt : _fmt);
+        Log.Debug!fmt(args);
     }
     /// Log an info level message, optionally prefixed by `prefix: `
-    void Info(bool addPrefix = true, Args...)(const char* fmt, const auto ref Args args)
+    void Info(string _fmt, bool addPrefix = true, Args...)(const auto ref Args args)
     {
-        static if (addPrefix)
-        {
-            fmt = this.prefix ~ ": " ~ fmt;
-        }
-        Log.Info(fmt, args);
+        enum fmt = (addPrefix ? prefix ~ _fmt : _fmt);
+        Log.Info!fmt(args);
     }
     /// Log a warning level message, optionally prefixed by `prefix: `
-    void Warning(bool addPrefix = true, Args...)(const char* fmt, const auto ref Args args)
+    void Warning(string _fmt, bool addPrefix = true, Args...)(const auto ref Args args)
     {
-        static if (addPrefix)
-        {
-            fmt = this.prefix ~ ": " ~ fmt;
-        }
-        Log.Warning(fmt, args);
+        enum fmt = (addPrefix ? prefix ~ _fmt : _fmt);
+        Log.Warning!fmt(args);
     }
     /// Log a error level message, optionally prefixed by `prefix: `
-    void Error(bool addPrefix = true, Args...)(const char* fmt, const auto ref Args args)
+    void Error(string _fmt, bool addPrefix = true, Args...)(const auto ref Args args)
     {
-        static if (addPrefix)
-        {
-            fmt = this.prefix ~ ": " ~ fmt;
-        }
-        Log.Error(fmt, args);
+        enum fmt = (addPrefix ? prefix ~ _fmt : _fmt);
+        Log.Error!fmt(args);
     }
     /// Log a fatal level message, optionally prefixed by `prefix: `
-    void Fatal(bool addPrefix = true, Args...)(const char* fmt, const auto ref Args args)
+    void Fatal(string _fmt, bool addPrefix = true, Args...)(const auto ref Args args)
     {
-        static if (addPrefix)
-        {
-            fmt = this.prefix ~ ": " ~ fmt;
-        }
-        Log.Fatal(fmt, args);
+        enum fmt = (addPrefix ? prefix ~ _fmt : _fmt);
+        Log.Fatal!fmt(args);
     }
 
 }

@@ -23,7 +23,7 @@ extern(C):
     ///
     void __assert(const char* message, const char* file, int line)
     {
-        Log.Fatal("Assertion error @ %s:%d: %s", file, line, message);
+        Log.Fatal!"Assertion error @ %s:%d: %s"(file, line, message);
     }
 }
 

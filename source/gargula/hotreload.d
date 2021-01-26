@@ -9,9 +9,7 @@ version (Have_fswatch)
         import gargula.builtin.tween;
         import gargula.log : Logger;
 
-        Logger log = {
-            prefix: "HOTRELOAD",
-        };
+        Logger!"HOTRELOAD" log;
 
         FileWatch watcher;
         string executableName;
@@ -28,10 +26,10 @@ version (Have_fswatch)
             executableName = to!string(exename);
             filesToWatch = join(fileLists);
 
-            log.Info("Watching files '%s'", exename);
+            log.Info!"Watching files '%s'"(exename);
             foreach (file; filesToWatch)
             {
-                log.Debug!false("    > '%s'", file);
+                log.Debug!("    > '%s'", false)(file);
             }
 
             delay.endCallback = () {
@@ -55,14 +53,14 @@ version (Have_fswatch)
                 auto isSomeUpdateEvent = event.type.among(FileChangeEventType.modify, FileChangeEventType.create);
                 if (isSomeUpdateEvent && event.path == executableName)
                 {
-                    log.Info("Executable modified, reloading code in %g", delay.duration);
+                    log.Info!"Executable modified, reloading code in %g"(delay.duration);
                     reloadingCode = true;
                     return;
                 }
                 else if ((isSomeUpdateEvent && filesToWatch.canFind(event.path))
                         || (filesToWatch.canFind(event.newPath) && event.type == FileChangeEventType.rename))
                 {
-                    log.Info("File modified '%s'", event.path);
+                    log.Info!"File modified '%s'"(event.path);
                     shouldReload = true;
                 }
                 //else
@@ -75,7 +73,7 @@ version (Have_fswatch)
             {
                 foreach (o; game.rootObjects)
                 {
-                    log.Info("Reloading '%s'", o.typeName);
+                    log.Info!"Reloading '%s'"(o.typeName);
                     o.destroy(o.object);
                     o.initialize();
                 }
@@ -92,7 +90,7 @@ version (Have_fswatch)
                 auto executableNameZ = executableName.toStringz;
                 if (access(executableNameZ, X_OK) == 0)
                 {
-                    log.Info("Reloading code!");
+                    log.Info!"Reloading code!";
                     string state = game.saveState.serializeGameAsText(game);
                     game.cleanup();
                     destroy(watcher);
@@ -118,7 +116,7 @@ version (Have_fswatch)
             }
             else
             {
-                log.Info("Code reloading is not implemented for this platform yet!");
+                log.Info!"Code reloading is not implemented for this platform yet!";
             }
         }
     }
