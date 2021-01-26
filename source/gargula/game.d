@@ -37,7 +37,7 @@ struct GameConfig
     size_t maxObjects = 1024;
 
     /// Config flags for window
-    uint windowFlags = 0;
+    uint windowFlags = FLAG_VSYNC_HINT;
     /// Whether Audio should be initialized along with Window
     bool initAudio = true;
     /// Whether FPS should be shown on debug builds
@@ -52,7 +52,7 @@ struct GameConfig
     /// Initial window height
     int height = 450;
     /// Target number of Frames per Second
-    int targetFPS = 60;
+    int targetFPS = -1;
     /// Initial window title
     string title = "Title";
     /// Default clear color, may be changed at runtime on GameTemplate instance
@@ -291,7 +291,10 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             saveState.initialize(this, initialState);
         }
 
-        SetTargetFPS(_config.targetFPS);
+        static if (_config.targetFPS != GameConfig.init.targetFPS)
+        {
+            SetTargetFPS(_config.targetFPS);
+        }
         scope(exit)
         {
             cleanup(); 
