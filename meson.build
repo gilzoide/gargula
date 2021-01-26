@@ -31,14 +31,18 @@ dependencies += raylib_subproject.dependency('raylib')
 betterclist = subproject('betterclist')
 bettercmath = subproject('bettercmath')
 flyweightbyid = subproject('flyweightbyid')
+fswatch = dependency('fswatch', version: ['>=0.5.1', '<0.6.0'], required: false, method: 'dub')
 
 dependencies += [
   betterclist.get_variable('betterclist_dep'),
   bettercmath.get_variable('bettercmath_dep'),
   flyweightbyid.get_variable('flyweightbyid_dep'),
-  dependency('fswatch', version: ['>=0.5.1', '<0.6.0'], method: 'dub'),
+  fswatch,
 ]
 
+if not fswatch.found()
+  warning('fswatch not found, hot reloading not supported')
+endif
 # General configuration
 if host_machine.system() == 'windows'
   dependencies += [

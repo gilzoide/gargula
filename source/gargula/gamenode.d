@@ -3,7 +3,8 @@ module gargula.gamenode;
 version (D_BetterC) {}
 else debug
 {
-    version (Have_fswatch)
+    import gargula.hotreload : haveHotReload;
+    static if (haveHotReload)
     {
         version = HotReload;
     }
@@ -39,7 +40,6 @@ struct GameNode
     version (HotReload)
     {
         initializeMethod initialize;
-        string typeName;
     }
     version (SaveState)
     {
@@ -48,7 +48,7 @@ struct GameNode
         alias deserializeMethod = void function(void*, const ref JSONValue);
         serializeMethod serialize;
         deserializeMethod deserialize;
-        string mangledGameCreate;
+        string typeName;
     }
 
     static GameNode create(T)()
@@ -79,13 +79,13 @@ struct GameNode
         version (HotReload)
         {
             initialize = &object._initialize;
-            typeName = T.stringof;
         }
         version (SaveState)
         {
             import gargula.savestate : deserializeInto, serialize;
             this.serialize = cast(serializeMethod) &serialize!(T);
             this.deserialize = cast(deserializeMethod) &deserializeInto!(T);
+            typeName = T.stringof;
         }
     }
 }

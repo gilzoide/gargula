@@ -1,6 +1,8 @@
 module gargula.hotreload;
 
-version (Have_fswatch)
+enum haveHotReload = __traits(compiles, { import fswatch; });
+
+static if (haveHotReload)
 {
     package struct HotReload(Game)
     {

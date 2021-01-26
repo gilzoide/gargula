@@ -6,7 +6,8 @@ import gargula.wrapper.raylib;
 version (D_BetterC) {}
 else debug
 {
-    version (Have_fswatch)
+    import gargula.hotreload : haveHotReload;
+    static if (haveHotReload)
     {
         version = HotReload;
     }
@@ -151,6 +152,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     version (D_BetterC) {}
     else this(string[] args)
     {
+        debug SetTraceLogLevel(_config.debugLogLevel);
+        else  SetTraceLogLevel(_config.releaseLogLevel);
         if (args.length > 0)
         {
             import std.string : toStringz;
@@ -161,6 +164,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     }
     this(int argc, const char** argv)
     {
+        debug SetTraceLogLevel(_config.debugLogLevel);
+        else  SetTraceLogLevel(_config.releaseLogLevel);
         if (argc > 0)
         {
             processArg0(argv[0]);
@@ -208,8 +213,6 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     {
         if (!IsWindowReady())
         {
-            debug SetTraceLogLevel(_config.debugLogLevel);
-            else  SetTraceLogLevel(_config.releaseLogLevel);
             static if (_config.windowFlags > 0)
             {
                 SetConfigFlags(_config.windowFlags);
