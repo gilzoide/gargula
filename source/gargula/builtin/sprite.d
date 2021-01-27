@@ -12,8 +12,8 @@ enum SpriteOptions
     axisAligned = 1 << 0,
     /// Pivot is fixed to Sprite's center
     fixedPivot = 1 << 1,
-    /// Add destRect instead of position+scale for coordinates
-    rectCoordinates = 1 << 2,
+    /// Use rect.size as size directly instead of scale factor
+    rectSize = 1 << 2,
 }
 
 struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
@@ -25,39 +25,52 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
     version (LDC) @disable this();
 
     TextureType texture;
-    static if (options & SpriteOptions.rectCoordinates)
+    Rectangle rect = { 0, 1 };
+    alias rect this;
+    Color tintColor = WHITE;
+
+    @property Vector2 position() const
     {
-        Rectangle rect = { 0, 0 };
-        alias rect this;
-        alias destRect = rect;
-        enum destOrigin = Vector2.zeros;
+        return rect.origin;
+    }
+    @property void position(const Vector2 value)
+    {
+        rect.origin = value;
+    }
+    static if (options & SpriteOptions.rectSize)
+    {
+        enum Vector2 scale = 1;
+        @property Vector2 size() const
+        {
+            return rect.size;
+        }
     }
     else
     {
-        Vector2 position = 0;
-        float scale = 1;
-
-        Rectangle destRect() const
+        @property Vector2 scale() const
         {
-            return Rectangle(position, scale * size);
+            return rect.size;
+        }
+        @property void scale(const Vector2 value)
+        {
+            rect.size = value;
         }
 
-        Vector2 destOrigin() const
+        @property Vector2 size() const
         {
-            return pivot * scale * size;
+            return scale * texture.size;
         }
-
-        static if (options & SpriteOptions.fixedPivot)
-        {
-            enum Vector2 pivot = 0.5;
-        }
-        else
-        {
-            Vector2 pivot = 0.5;
-        }
-
     }
-    Color tintColor = WHITE;
+
+    static if (options & SpriteOptions.fixedPivot)
+    {
+        enum Vector2 pivot = 0.5;
+    }
+    else
+    {
+        Vector2 pivot = 0.5;
+    }
+
 
     static if (options & SpriteOptions.axisAligned)
     {
@@ -76,22 +89,12 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
         {
             sourceRect.size = texture.size;
         }
-        static if (options & SpriteOptions.rectCoordinates)
-        {
-            if (destRect.empty)
-            {
-                destRect.size = texture.size;
-            }
-        }
-    }
-
-    Vector2 size() const
-    {
-        return texture.size;
     }
 
     void draw()
     {
+        Vector2 destOrigin = pivot * this.size;
+        Rectangle destRect = { position, this.size };
         texture.draw(sourceRect, destRect, destOrigin, rotation, tintColor);
     }
 }
@@ -100,12 +103,12 @@ mixin template SpriteVariations(TextureType)
 {
     import gargula.builtin.sprite : SpriteOptions, SpriteTemplate;
     alias Sprite = SpriteTemplate!(TextureType);
-    alias SpriteRect = SpriteTemplate!(TextureType, SpriteOptions.rectCoordinates);
+    alias SpriteRect = SpriteTemplate!(TextureType, SpriteOptions.rectSize);
     alias CenteredSprite = SpriteTemplate!(TextureType, SpriteOptions.fixedPivot);
-    alias CenteredSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.fixedPivot | SpriteOptions.rectCoordinates);
+    alias CenteredSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.fixedPivot | SpriteOptions.rectSize);
     alias AASprite = SpriteTemplate!(TextureType, SpriteOptions.axisAligned);
-    alias AASpriteRect = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.rectCoordinates);
+    alias AASpriteRect = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.rectSize);
     alias AACenteredSprite = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
-    alias AACenteredSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.fixedPivot | SpriteOptions.rectCoordinates);
+    alias AACenteredSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.fixedPivot | SpriteOptions.rectSize);
 }
 mixin SpriteVariations!Texture;
