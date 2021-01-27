@@ -76,7 +76,7 @@ struct GameConfig
     ShaderOptions[] shaders = [];
 
     /// Combo keys for triggering reload or save/load state
-    int[] debugComboKeys = [KEY_LEFT_CONTROL, KEY_LEFT_SHIFT];
+    int[] debugComboKeys = [KEY_LEFT_ALT];
     /// Key that triggers a game pause/resume on debug
     int debugPauseKey = KEY_P;
     /// Key that triggers a single frame advance when game is paused on debug

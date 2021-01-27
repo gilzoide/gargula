@@ -1,11 +1,20 @@
 module gargula.hotreload;
 
-version (D_BetterC)
+debug
+{
+    version (D_BetterC)
+    {
+        enum haveHotReload = false;
+    }
+    else
+    {
+        enum haveHotReload = __traits(compiles, { import fswatch; });
+    }
+}
+else
 {
     enum haveHotReload = false;
 }
-else debug enum haveHotReload = __traits(compiles, { import fswatch; });
-else enum haveHotReload = false;
 
 static if (haveHotReload)
 {
