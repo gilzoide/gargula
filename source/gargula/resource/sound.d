@@ -6,7 +6,7 @@ import gargula.wrapper.raylib;
 
 template SoundResource(string[] _files)
 {
-    immutable static string[] files = _files;
+    static immutable string[] files = _files;
     enum filenames = _files;
 
     Sound load(uint id)

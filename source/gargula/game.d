@@ -32,6 +32,7 @@ struct GameConfig
 {
     import gargula.resource.rendertexture : RenderTextureOptions;
     import gargula.resource.texture : TextureOptions;
+    import gargula.resource.textureatlas : TextureAtlasOptions;
 
     /// Max number of objects at a time
     size_t maxObjects = 1024;
@@ -64,8 +65,10 @@ struct GameConfig
     string[] musics = [];
     /// Sound file paths
     string[] sounds = [];
-    /// Texture file paths
+    /// Texture file paths and options
     TextureOptions[] textures = [];
+    /// Texture Atlases file pathas and options
+    TextureAtlasOptions[] textureAtlases = [];
     /// Wave file paths
     string[] waves = [];
 
@@ -104,6 +107,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     import gargula.resource.rendertexture : RenderTextureResource;
     import gargula.resource.sound : SoundResource;
     import gargula.resource.texture : TextureResource;
+    import gargula.resource.textureatlas : TextureAtlasResource;
     import gargula.resource.wave : WaveResource;
     import gargula.builtin : MusicStreamTemplate, SpriteVariations;
 
@@ -114,6 +118,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     private enum musics = _config.musics;
     private enum sounds = _config.sounds;
     private enum textures = _config.textures;
+    private enum textureAtlases = _config.textureAtlases;
     private enum waves = _config.waves;
     private enum renderTextures = _config.renderTextures;
 
@@ -129,6 +134,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     alias RenderTexture = RenderTextureResource!(renderTextures);
     alias Sound = SoundResource!(sounds).Flyweight;
     alias Texture = TextureResource!(textures).Flyweight;
+    alias TextureAtlas = TextureAtlasResource!(textureAtlases).Flyweight;
     alias Wave = WaveResource!(waves).Flyweight;
     // Nodes that depend on resources
     alias MusicStream = MusicStreamTemplate!(Music);

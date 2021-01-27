@@ -95,6 +95,7 @@ sources = files(
   'source/gargula/resource/rendertexture.d',
   'source/gargula/resource/sound.d',
   'source/gargula/resource/texture.d',
+  'source/gargula/resource/textureatlas.d',
   'source/gargula/resource/wave.d',
   'source/gargula/savestate.d',
   'source/gargula/wrapper/raylib.d',
