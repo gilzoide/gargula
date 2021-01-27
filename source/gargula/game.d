@@ -3,16 +3,19 @@ module gargula.game;
 import gargula.log;
 import gargula.wrapper.raylib;
 
-version (D_BetterC) {}
-else debug
+debug
 {
-    import gargula.hotreload : haveHotReload;
-    static if (haveHotReload)
-    {
-        version = HotReload;
-    }
-    version = SaveState;
     version = Pausable;
+    version (D_BetterC) {}
+    else
+    {
+        import gargula.hotreload : haveHotReload;
+        static if (haveHotReload)
+        {
+            version = HotReload;
+        }
+        version = SaveState;
+    }
 }
 
 version (WebAssembly)
@@ -99,7 +102,7 @@ struct GameConfig
 
 struct GameTemplate(GameConfig _config = GameConfig.init)
 {
-    import betterclist : List;
+    import betterclist : list, List;
 
     import gargula.gamenode : GameNode;
     import gargula.resource.font : FontResource;
@@ -121,6 +124,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     private enum textures = _config.textures;
     private enum waves = _config.waves;
     private enum renderTextures = _config.renderTextures;
+    private enum debugComboKeys = list!(_config.debugComboKeys);
 
     /// Clear color
     Color clearColor = _config.clearColor;
@@ -329,7 +333,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             import gargula.wrapper.raylib : IsKeyDown, IsKeyPressed;
 
             bool forceUpdate = false;
-            if (_config.debugComboKeys.all!IsKeyDown)
+            if (debugComboKeys[].all!IsKeyDown)
             {
                 if (IsKeyPressed(_config.debugPauseKey))
                 {

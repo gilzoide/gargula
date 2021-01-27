@@ -1,15 +1,18 @@
 module gargula.gamenode;
 
-version (D_BetterC) {}
-else debug
+debug
 {
-    import gargula.hotreload : haveHotReload;
-    static if (haveHotReload)
-    {
-        version = HotReload;
-    }
-    version = SaveState;
     version = Pausable;
+    version (D_BetterC) {}
+    else
+    {
+        import gargula.hotreload : haveHotReload;
+        static if (haveHotReload)
+        {
+            version = HotReload;
+        }
+        version = SaveState;
+    }
 }
 
 struct GameNode
