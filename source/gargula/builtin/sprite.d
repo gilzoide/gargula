@@ -1,5 +1,6 @@
 module gargula.builtin.sprite;
 
+import gargula.builtin.tween;
 import gargula.node;
 import gargula.resource.texture;
 import gargula.wrapper.raylib;
@@ -14,6 +15,8 @@ enum SpriteOptions
     fixedPivot = 1 << 1,
     /// Use rect.size as size directly instead of scale factor
     rectSize = 1 << 2,
+    /// Animate frame changes on `update`, only useful on Textures with more than one region
+    animated = 1 << 3,
 }
 
 struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
@@ -83,10 +86,33 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
 
     Rectangle sourceRect = { 0, 0 };
     int region = 0;
+    void setRegion(int region)
+    {
+        this.region = region;
+        sourceRect = texture.region(region);
+    }
+    static if (options & SpriteOptions.animated)
+    {
+        Tween!"linear" animation = {
+            looping: true,
+        };
+    }
 
     void lateInitialize()
     {
-        sourceRect = texture.region(region);
+        setRegion(region);
+    }
+
+    void lateUpdate()
+    {
+        static if (options & SpriteOptions.animated)
+        {
+            int currentRegion = animation.value(0, cast(int) texture.regions.length);
+            if (currentRegion != region)
+            {
+                setRegion(currentRegion);
+            }
+        }
     }
 
     void draw()
@@ -108,5 +134,14 @@ mixin template SpriteVariations(TextureType)
     alias AASpriteRect = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.rectSize);
     alias AACenteredSprite = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
     alias AACenteredSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.fixedPivot | SpriteOptions.rectSize);
+
+    alias AnimatedSprite = SpriteTemplate!(TextureType, SpriteOptions.animated);
+    alias AnimatedSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.animated | SpriteOptions.rectSize);
+    alias AnimatedCenteredSprite = SpriteTemplate!(TextureType, SpriteOptions.animated | SpriteOptions.fixedPivot);
+    alias AnimatedCenteredSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.animated | SpriteOptions.fixedPivot | SpriteOptions.rectSize);
+    alias AnimatedAASprite = SpriteTemplate!(TextureType, SpriteOptions.animated | SpriteOptions.axisAligned);
+    alias AnimatedAASpriteRect = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.rectSize);
+    alias AnimatedAACenteredSprite = SpriteTemplate!(TextureType, SpriteOptions.animated | SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
+    alias AnimatedAACenteredSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.animated | SpriteOptions.axisAligned | SpriteOptions.fixedPivot | SpriteOptions.rectSize);
 }
 mixin SpriteVariations!TextureAtlas;
