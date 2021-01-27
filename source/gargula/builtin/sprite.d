@@ -58,7 +58,7 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
 
         @property Vector2 size() const
         {
-            return scale * texture.size;
+            return scale * sourceRect.size;
         }
     }
 
@@ -82,13 +82,11 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
     }
 
     Rectangle sourceRect = { 0, 0 };
+    int region = 0;
 
     void lateInitialize()
     {
-        if (sourceRect.empty)
-        {
-            sourceRect.size = texture.size;
-        }
+        sourceRect = texture.region(region);
     }
 
     void draw()
@@ -111,4 +109,4 @@ mixin template SpriteVariations(TextureType)
     alias AACenteredSprite = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.fixedPivot);
     alias AACenteredSpriteRect = SpriteTemplate!(TextureType, SpriteOptions.axisAligned | SpriteOptions.fixedPivot | SpriteOptions.rectSize);
 }
-mixin SpriteVariations!Texture;
+mixin SpriteVariations!TextureAtlas;

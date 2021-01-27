@@ -16,8 +16,6 @@ public import gargula.resource.sound :
 public import gargula.resource.texture :
     unload, update, getData, genMipmaps, setFilter,
     setWrap, draw, size;
-public import gargula.resource.textureatlas :
-    unload;
 public import gargula.resource.wave :
     unload, loadSound;
 

@@ -10,6 +10,8 @@ struct TextureOptions
 {
     /// File name.
     string filename;
+    /// Texture regions, maintain null for using the whole texture
+    Rectangle[] regions = null;
     /// Whether mipmaps should be created on load.
     bool mipmaps = false;
     /// Filter mode.
@@ -18,13 +20,36 @@ struct TextureOptions
     int wrap = -1;
 }
 
+/// Wrapper around Texture with region information.
+struct TextureAtlas
+{
+    /// Texture data.
+    Texture texture;
+    alias texture this;
+    /// Texture regions coordinates
+    const(Rectangle)[] regions;
+
+    /// Get region information, defaulting to whole texture
+    Rectangle region(const int i) const
+    {
+        if (i >= 0 && i < regions.length)
+        {
+            return regions[i];
+        }
+        else
+        {
+            return Rectangle(Vector2.zeros, texture.size);
+        }
+    }
+}
+
 template TextureResource(TextureOptions[] _options)
 {
     import std.algorithm : map;
     static immutable TextureOptions[] options = _options;
     enum filenames = list!(_options[].map!"a.filename");
 
-    Texture load(uint id)
+    TextureAtlas load(uint id)
     in { assert(id < _options.length); }
     do
     {
@@ -42,11 +67,15 @@ template TextureResource(TextureOptions[] _options)
         {
             tex.setWrap(option.wrap);
         }
-        return tex;
+        TextureAtlas atlas = {
+            texture: tex,
+            regions: option.regions,
+        };
+        return atlas;
     }
 
     alias Flyweight = .Flyweight!(
-        Texture,
+        TextureAtlas,
         load,
         unload!Texture,
         filenames,
