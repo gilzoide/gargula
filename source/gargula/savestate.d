@@ -24,6 +24,7 @@ enum skipSerialization(T) = false
     || is(T : Font)
     || is(T : Music)
     || is(T : RenderTexture)
+    || is(T : Shader)
     || is(T : Sound)
     || is(T : Texture)
     || is(T : Wave)

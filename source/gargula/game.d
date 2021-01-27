@@ -31,6 +31,7 @@ extern(C) void __assert(const char* message, const char* file, int line)
 struct GameConfig
 {
     import gargula.resource.rendertexture : RenderTextureOptions;
+    import gargula.resource.shader : ShaderOptions;
     import gargula.resource.texture : TextureOptions;
 
     /// Max number of objects at a time
@@ -71,6 +72,8 @@ struct GameConfig
 
     /// RenderTexture Flyweight configurations
     RenderTextureOptions[] renderTextures = [];
+    /// Shader codes
+    ShaderOptions[] shaders = [];
 
     /// Combo keys for triggering reload or save/load state
     int[] debugComboKeys = [KEY_LEFT_CONTROL, KEY_LEFT_SHIFT];
@@ -102,6 +105,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     import gargula.resource.font : FontResource;
     import gargula.resource.music : MusicResource;
     import gargula.resource.rendertexture : RenderTextureResource;
+    import gargula.resource.shader : ShaderResource;
     import gargula.resource.sound : SoundResource;
     import gargula.resource.texture : TextureResource;
     import gargula.resource.wave : WaveResource;
@@ -112,6 +116,7 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     private enum N = _config.maxObjects;
     private enum fonts = _config.fonts;
     private enum musics = _config.musics;
+    private enum shaders = _config.shaders;
     private enum sounds = _config.sounds;
     private enum textures = _config.textures;
     private enum waves = _config.waves;
@@ -126,7 +131,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     // Resource Flyweights
     alias Font = FontResource!(fonts).Flyweight;
     alias Music = MusicResource!(musics).Flyweight;
-    alias RenderTexture = RenderTextureResource!(renderTextures);
+    alias RenderTexture = RenderTextureResource!(renderTextures).Flyweight;
+    alias Shader = ShaderResource!(shaders).Flyweight;
     alias Sound = SoundResource!(sounds).Flyweight;
     alias Texture = TextureResource!(textures).Flyweight;
     alias Wave = WaveResource!(waves).Flyweight;

@@ -1,12 +1,37 @@
 module gargula.resource.shader;
 
+import betterclist;
+import flyweightbyid;
+
+import gargula.node;
 import gargula.wrapper.raylib;
 
 struct ShaderOptions
 {
     string name;
-    string vertex = "";
-    string fragment = "";
+    string vertex = null;
+    string fragment = null;
+}
+
+/// Shader node with draw/lateDraw
+struct ShaderNode
+{
+    mixin Node;
+
+    /// Shader data.
+    Shader shader;
+    alias shader this;
+
+    ///
+    void draw()
+    {
+        BeginShaderMode(shader);
+    }
+    ///
+    void lateDraw()
+    {
+        EndShaderMode();
+    }
 }
 
 struct ShaderResource(ShaderOptions[] _options)
@@ -14,16 +39,18 @@ struct ShaderResource(ShaderOptions[] _options)
     import std.algorithm : map;
     static immutable options = _options;
 
-    Shader load(uint id)
+    static ShaderNode load(uint id)
     in { assert(id < options.length); }
     do
     {
         immutable option = options[id];
-        return LoadShaderCode(option.vertex, option.fragment);
+        Shader shader = LoadShader(cast(const char*) option.vertex, cast(const char*) option.fragment);
+        ShaderNode node = { shader: shader };
+        return node;
     }
 
     alias Flyweight = .Flyweight!(
-        Shader,
+        ShaderNode,
         load,
         unload!Shader,
         list!(_options[].map!"a.name"),
