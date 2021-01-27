@@ -20,13 +20,13 @@ struct RenderTextureOptions
 template RenderTextureResource(RenderTextureOptions[] _options)
 {
     import std.algorithm : map;
-    static immutable auto sizes = list!(_options[].map!"a.size");
+    static immutable sizes = list!(_options[].map!"a.size");
 
     RenderTexture load(uint id)
     in { assert(id < _options.length); }
     do
     {
-        auto size = sizes[id];
+        immutable size = sizes[id];
         return LoadRenderTexture(size.width, size.height);
     }
 

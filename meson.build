@@ -93,6 +93,7 @@ sources = files(
   'source/gargula/resource/music.d',
   'source/gargula/resource/package.d',
   'source/gargula/resource/rendertexture.d',
+  'source/gargula/resource/shader.d',
   'source/gargula/resource/sound.d',
   'source/gargula/resource/texture.d',
   'source/gargula/resource/wave.d',

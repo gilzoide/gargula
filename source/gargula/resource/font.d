@@ -6,7 +6,7 @@ import gargula.wrapper.raylib;
 
 template FontResource(string[] _files)
 {
-    immutable static string[] files = _files;
+    immutable static files = _files;
     enum filenames = _files;
 
     Font load(uint id)

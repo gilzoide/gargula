@@ -46,14 +46,14 @@ struct TextureAtlas
 template TextureResource(TextureOptions[] _options)
 {
     import std.algorithm : map;
-    static immutable TextureOptions[] options = _options;
+    static immutable options = _options;
     enum filenames = list!(_options[].map!"a.filename");
 
     TextureAtlas load(uint id)
     in { assert(id < _options.length); }
     do
     {
-        const auto option = options[id];
+        immutable option = options[id];
         Texture tex = LoadTexture(cast(const char*) option.filename);
         if (option.mipmaps)
         {

@@ -10,6 +10,8 @@ public import gargula.resource.music :
     setVolume, setPitch, getTimeLength, getTimePlayed;
 public import gargula.resource.rendertexture :
     unload, size;
+public import gargula.resource.shader :
+    unload;
 public import gargula.resource.sound :
     unload, update, unload, play, stop, pause, resume,
     playMulti, stopMulti, isPlaying, setVolume, setPitch;
