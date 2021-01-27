@@ -124,7 +124,6 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
     private enum textures = _config.textures;
     private enum waves = _config.waves;
     private enum renderTextures = _config.renderTextures;
-    private enum debugComboKeys = list!(_config.debugComboKeys);
 
     /// Clear color
     Color clearColor = _config.clearColor;
@@ -333,7 +332,8 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             import gargula.wrapper.raylib : IsKeyDown, IsKeyPressed;
 
             bool forceUpdate = false;
-            if (debugComboKeys[].all!IsKeyDown)
+            immutable debugComboKeys = _config.debugComboKeys;
+            if (debugComboKeys.all!IsKeyDown)
             {
                 if (IsKeyPressed(_config.debugPauseKey))
                 {
