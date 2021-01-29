@@ -1,5 +1,7 @@
 module gargula.resource.texture;
 
+import std.algorithm;
+
 import betterclist;
 import flyweightbyid;
 
@@ -29,16 +31,22 @@ struct TextureAtlas
     /// Texture regions coordinates
     const(Rectangle)[] regions;
 
+    /// The region for the whole texture 
+    Rectangle fullRegion() const
+    {
+        return Rectangle(Vector2.zeros, texture.size);
+    }
+
     /// Get region information, defaulting to whole texture
     Rectangle region(const int i) const
     {
-        if (i >= 0 && i < regions.length)
+        if (regions.length == 0)
         {
-            return regions[i];
+            return fullRegion;
         }
         else
         {
-            return Rectangle(Vector2.zeros, texture.size);
+            return regions[clamp(i, 0, regions.length - 1)];
         }
     }
 }

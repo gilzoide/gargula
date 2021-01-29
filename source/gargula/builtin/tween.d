@@ -35,6 +35,8 @@ struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.n
     float speed = 1;
     /// If true, continue running after duration ended, starting again
     bool looping = false;
+    /// If true, automatically reset time when not looping and tween ended
+    bool autoReset = false;
     /// Cached easing value result
     private float _value;
 
@@ -124,6 +126,7 @@ struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.n
                 }
                 else
                 {
+                    time *= !autoReset;
                     active = false;
                 }
             }

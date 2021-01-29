@@ -86,6 +86,11 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
 
     Rectangle sourceRect = { 0, 0 };
     int region = 0;
+    void setFullRegion()
+    {
+        this.region = -1;
+        sourceRect = texture.fullRegion;
+    }
     void setRegion(int region)
     {
         this.region = region;
@@ -100,7 +105,21 @@ struct SpriteTemplate(TextureType, SpriteOptions options = SpriteOptions.none)
 
     void lateInitialize()
     {
-        setRegion(region);
+        if (region < 0)
+        {
+            setFullRegion();
+        }
+        else
+        {
+            setRegion(region);
+        }
+    }
+
+    Rectangle drawnRectangle() const
+    {
+        Vector2 destOrigin = pivot * this.size;
+        Rectangle drawnRect = { position - destOrigin, this.size };
+        return drawnRect;
     }
 
     void lateUpdate()
