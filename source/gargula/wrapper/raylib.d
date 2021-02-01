@@ -79,7 +79,8 @@ import bettercmath.vector : _Vector = Vector;
 import bettercmath.matrix : _Matrix = Matrix;
 import bettercmath.box : _BoundingBox = BoundingBox, BoundingBoxOptions;
 
-extern (C) @nogc nothrow:
+extern (C):
+@nogc nothrow:
 
 // Required for: va_list - Only used by TraceLogCallback
 
@@ -316,8 +317,8 @@ struct Material
 struct Transform
 {
     Vector3 translation; // Translation
-    Quaternion rotation; // Rotation
-    Vector3 scale; // Scale
+    Quaternion rotation = Quaternion(0, 0, 0, 1); // Rotation
+    Vector3 scale = Vector3(1, 1, 1); // Scale
 }
 
 // Bone information

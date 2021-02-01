@@ -30,7 +30,7 @@ sedscript=$(echo '
 /^struct BoundingBox/,/^}/c  alias BoundingBox = _BoundingBox!(float, 3);
 
 # Add "@nogc nothrow" function attributes
-s/^(extern \(C\))/\1 @nogc nothrow/
+/^(extern \(C\))/a @nogc nothrow:
 
 # Fix initial float values as 0 instead of NaN
 s/^(\s+float[^*][^;]+);/\1 = 0;/
@@ -40,6 +40,11 @@ s/float zoom = 0;/float zoom = 1;/
 
 # Set initial value for Camera3D.up to [0, 1, 0]
 s/(Vector3 up)/\1 = Vector3(0, 1, 0)/
+
+# Set initial value for Transform.rotation to [0, 0, 0, 1]
+s/^(\s+Quaternion rotation)/\1 = Quaternion(0, 0, 0, 1)/
+# Set initial value for Transform.scale to [1, 1, 1]
+s/^(\s+Vector3 scale)/\1 = Vector3(1, 1, 1)/
 
 # Fix "Temporal hack" aliases
 s/^enum (\w+ = \w+;)/alias \1/
