@@ -30,7 +30,7 @@ static if (haveHotReload)
         FileWatch watcher;
         string executableName;
         string[] filesToWatch;
-        TweenCallback!() delay = {
+        Tween!"linear" delay = {
             duration: Game.config.debugReloadCodeDelay,
         };
         bool reloadingCode = false;

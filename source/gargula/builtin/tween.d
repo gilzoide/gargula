@@ -2,19 +2,8 @@ module gargula.builtin.tween;
 
 import gargula.node;
 
-/// Options for Tween Nodes
-enum TweenOptions
-{
-    /// Default options
-    none = 0,
-    /// When Tween ends, it automatically inverts direction
-    yoyo = 1 << 0,
-    /// Calls `endCallback` delegate when tween ends
-    endCallback = 1 << 1,
-}
-
 /// Tween Node with fixed easing function
-struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.none)
+struct Tween(string easingName = "linear")
 {
     mixin Node;
 
@@ -24,8 +13,10 @@ struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.n
 
     import gargula.wrapper.raylib : GetFrameTime;
 
+    alias Easings = Easing!float;
+
     /// Easing function used
-    enum easingFunc = Easing!float.named!easingName;
+    enum easingFunc = Easings.named!easingName;
 
     /// Duration in seconds
     float duration = 1;
@@ -40,16 +31,13 @@ struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.n
     /// Cached easing value result
     private float _value;
 
-    static if (options & TweenOptions.yoyo)
-    {
-        /// If true, yoyo tweens loop when going forward even if `looping` is false
-        bool yoyoLoops = true;
-    }
-    static if (options & TweenOptions.endCallback)
-    {
-        /// Callback called when tween ends
-        void delegate() endCallback;
-    }
+    /// If true, when Tween ends, it automatically inverts direction
+    bool yoyo = false;
+    /// If true, yoyo tweens loop when going forward even if `looping` is false
+    bool yoyoLoops = true;
+
+    /// Callback called when tween ends
+    void delegate() endCallback;
 
     invariant
     {
@@ -113,7 +101,7 @@ struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.n
         time += GetFrameTime() * speed;
         if (time > duration || time < 0)
         {
-            static if (options & TweenOptions.yoyo)
+            if (yoyo)
             {
                 speed = -speed;
                 active = looping || (yoyoLoops && isRewinding);
@@ -133,15 +121,8 @@ struct Tween(string easingName = "linear", TweenOptions options = TweenOptions.n
 
             import std.algorithm : clamp;
             time = clamp(time, 0, duration);
-            static if (options & TweenOptions.endCallback)
-            {
-                if (endCallback) endCallback();
-            }
+            if (endCallback) endCallback();
         }
         _value = valueAtCurrentPosition();
     }
 }
-
-alias TweenYoyo(string easingName = "linear") = Tween!(easingName, TweenOptions.yoyo);
-alias TweenCallback(string easingName = "linear") = Tween!(easingName, TweenOptions.endCallback);
-alias TweenYoyoCallback(string easingName = "linear") = Tween!(easingName, TweenOptions.yoyo | TweenOptions.endCallback);
