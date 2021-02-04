@@ -11,7 +11,8 @@ public import gargula.resource.music :
 public import gargula.resource.rendertexture :
     unload, size, RenderTextureNode;
 public import gargula.resource.shader :
-    unload, ShaderNode;
+    unload, ShaderNode, getLocation, getLocationAttrib,
+    setValue;
 public import gargula.resource.sound :
     unload, update, unload, play, stop, pause, resume,
     playMulti, stopMulti, isPlaying, setVolume, setPitch;
