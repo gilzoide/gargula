@@ -114,7 +114,7 @@ struct ShaderResource(ShaderOptions[] _options)
 void unload(T : Shader)(ref T shader)
 {
     UnloadShader(shader);
-    shader = T.init;
+    shader.id = T.init.id;
 }
 
 /// Get shader uniform location
