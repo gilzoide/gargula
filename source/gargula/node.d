@@ -1,5 +1,8 @@
 module gargula.node;
 
+import std.meta;
+import std.traits;
+
 version (D_BetterC) {}
 else debug
 {
@@ -30,14 +33,11 @@ void broadcast(
 )
 if (is(T == struct) && (method != null || lateMethod != null))
 {
-    import std.traits : hasMember;
-    static if (ifFieldTrue != null && hasMember!(T, ifFieldTrue))
+    if (isFieldExistentAndFalse!ifFieldTrue(obj))
     {
-        if (!mixin("obj." ~ ifFieldTrue))
-        {
-            return;
-        }
+        return;
     }
+
     static if (method != null && hasMember!(T, method))
     {
         //pragma(msg, "ROOT " ~ T.stringof ~ "." ~ method);
@@ -74,14 +74,9 @@ void broadcastChildren(
 )
 if (is(T == struct) && (method != null || lateMethod != null))
 {
-    import std.meta : AliasSeq, Reverse;
-    import std.traits : Fields, FieldNameTuple, hasMember;
-    static if (ifFieldTrue != null && hasMember!(T, ifFieldTrue))
+    if (isFieldExistentAndFalse!ifFieldTrue(obj))
     {
-        if (!mixin("obj." ~ ifFieldTrue))
-        {
-            return;
-        }
+        return;
     }
 
     enum aliasThis = __traits(getAliasThis, T);
@@ -94,7 +89,10 @@ if (is(T == struct) && (method != null || lateMethod != null))
             static if (method != null && hasMember!(fieldType, method))
             {
                 //pragma(msg, fieldType.stringof ~ " " ~ fieldName ~ "." ~ method);
-                mixin("obj." ~ fieldName ~ "." ~ method ~ "(args);");
+                if (!isFieldExistentAndFalse!(ifFieldTrue)(mixin("obj." ~ fieldName)))
+                {
+                    mixin("obj." ~ fieldName ~ "." ~ method ~ "(args);");
+                }
             }
             // repeat this traversal on children
             static if (is(fieldType == struct))
@@ -112,10 +110,25 @@ if (is(T == struct) && (method != null || lateMethod != null))
             static if (lateMethod != null && hasMember!(fieldType, lateMethod))
             {
                 //pragma(msg, fieldType.stringof ~ " " ~ fieldName ~ "." ~ lateMethod);
-                mixin("obj." ~ fieldName ~ "." ~ lateMethod ~ "(args);");
+                if (!isFieldExistentAndFalse!(ifFieldTrue)(mixin("obj." ~ fieldName)))
+                {
+                    mixin("obj." ~ fieldName ~ "." ~ lateMethod ~ "(args);");
+                }
             }
         }
     }}
+}
+
+bool isFieldExistentAndFalse(string ifFieldTrue, T)(ref T obj)
+{
+    static if (ifFieldTrue != null && hasMember!(T, ifFieldTrue))
+    {
+        return !mixin("obj." ~ ifFieldTrue);
+    }
+    else
+    {
+        return false;
+    }
 }
 
 /// Node in the object tree
