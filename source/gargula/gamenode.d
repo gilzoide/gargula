@@ -64,12 +64,12 @@ struct GameNode
         this.object = object;
         version (Pausable)
         {
-            update = &object._update;
-            draw = &object._draw;
+            update = &object._update!();
+            draw = &object._draw!();
         }
         else
         {
-            frame = &object._frame;
+            frame = &object._frame!();
         }
         static if (__traits(compiles, &.destroy!(false, T)))
         {
@@ -81,7 +81,7 @@ struct GameNode
         }
         version (HotReload)
         {
-            initialize = &object._initialize;
+            initialize = &object._initialize!();
         }
         version (SaveState)
         {

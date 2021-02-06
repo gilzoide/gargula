@@ -6,73 +6,116 @@ else debug
     version = SaveState;
 }
 
-void traverseCallingSelfThenChildren(
+/// Broadcasts `method` and `lateMethod` to object and all fields that
+/// define this member function.
+///
+/// First calls `method` on object, if defined, then in all fields
+/// from first to last that also define it.
+///
+/// Optionally, broadcast `lateMethod` in the same fashion as `method`,
+/// but reversing the order: first call it in all fields from last to
+/// first that defines the function, then call on this object.
+///
+/// Optionally, pass `ifFieldTrue` to check in runtime for this field
+/// before calling the functions for objects that define it. A falsey
+/// value makes function not be called.
+void broadcast(
     string method,
+    string lateMethod = null,
     string ifFieldTrue = null,
     T, Args...
 )(
     auto ref T obj,
     auto ref Args args
 )
-if (is(T == struct))
+if (is(T == struct) && (method != null || lateMethod != null))
 {
-    static if (method == null) return;
-
-    import std.traits : Fields, FieldNameTuple, hasMember;
+    import std.traits : hasMember;
     static if (ifFieldTrue != null && hasMember!(T, ifFieldTrue))
     {
-        if (!__traits(getMember, obj, ifFieldTrue))
+        if (!mixin("obj." ~ ifFieldTrue))
         {
             return;
         }
     }
-
-    static if (hasMember!(T, method))
+    static if (method != null && hasMember!(T, method))
     {
-        __traits(getMember, obj, method)(args);
+        //pragma(msg, "ROOT " ~ T.stringof ~ "." ~ method);
+        mixin("obj." ~ method ~ "(args);");
     }
-    static foreach (i, fieldName; FieldNameTuple!T)
+    broadcastChildren!(method, lateMethod, ifFieldTrue)(obj, args);
+    static if (lateMethod != null && hasMember!(T, lateMethod))
     {
-        static if (is(Fields!T[i] == struct))
-        {
-            traverseCallingSelfThenChildren!(method, ifFieldTrue)(__traits(getMember, obj, fieldName), args);
-        }
+        //pragma(msg, "ROOT " ~ T.stringof ~ "." ~ lateMethod);
+        mixin("obj." ~ lateMethod ~ "(args);");
     }
 }
 
-void traverseCallingReverseChildrenThenSelf(
+/// Broadcasts `method` and `lateMethod` to all fields that
+/// define this member function.
+///
+/// Calls `method` on all fields from first to last that also define it.
+///
+/// Optionally, broadcast `lateMethod` in the same fashion as `method`,
+/// but reversing the order: call it in all fields from last to
+/// first that defines the function.
+///
+/// Optionally, pass `ifFieldTrue` to check in runtime for this field
+/// before calling the functions for objects that define it. A falsey
+/// value makes function not be called.
+void broadcastChildren(
     string method,
+    string lateMethod,
     string ifFieldTrue = null,
     T, Args...
 )(
     auto ref T obj,
     auto ref Args args
 )
-if (is(T == struct))
+if (is(T == struct) && (method != null || lateMethod != null))
 {
-    static if (method == null) return;
-
-    import std.meta : Reverse;
+    import std.meta : AliasSeq, Reverse;
     import std.traits : Fields, FieldNameTuple, hasMember;
     static if (ifFieldTrue != null && hasMember!(T, ifFieldTrue))
     {
-        if (!__traits(getMember, obj, ifFieldTrue))
+        if (!mixin("obj." ~ ifFieldTrue))
         {
             return;
         }
     }
 
-    static foreach (i, fieldName; Reverse!(FieldNameTuple!T))
-    {
-        static if (is(Reverse!(Fields!T)[i] == struct))
+    enum aliasThis = __traits(getAliasThis, T);
+    static foreach (i, fieldName; FieldNameTuple!T)
+    {{
+        static if (aliasThis.length == 0 || aliasThis != AliasSeq!(fieldName))
         {
-            traverseCallingSelfThenChildren!(method, ifFieldTrue)(__traits(getMember, obj, fieldName), args);
+            alias fieldType = Fields!T[i];
+            // Call `method` on direct children
+            static if (method != null && hasMember!(fieldType, method))
+            {
+                //pragma(msg, fieldType.stringof ~ " " ~ fieldName ~ "." ~ method);
+                mixin("obj." ~ fieldName ~ "." ~ method ~ "(args);");
+            }
+            // repeat this traversal on children
+            static if (is(fieldType == struct))
+            {
+                mixin("broadcastChildren!(method, lateMethod, ifFieldTrue)(obj." ~ fieldName ~ ", args);");
+            }
         }
-    }
-    static if (hasMember!(T, method))
-    {
-        __traits(getMember, obj, method)(args);
-    }
+    }}
+    static foreach (i, fieldName; Reverse!(FieldNameTuple!T))
+    {{
+        static if (aliasThis.length == 0 || aliasThis != AliasSeq!(fieldName))
+        {
+            alias fieldType = Reverse!(Fields!T)[i];
+            // Call `lateMethod` on direct children
+            static if (lateMethod != null && hasMember!(fieldType, lateMethod))
+            {
+                //pragma(msg, fieldType.stringof ~ " " ~ fieldName ~ "." ~ lateMethod);
+                mixin("obj." ~ fieldName ~ "." ~ lateMethod ~ "(args);");
+            }
+        }
+    }}
 }
 
 /// Node in the object tree
@@ -80,57 +123,25 @@ mixin template Node()
 {
     private alias T = typeof(this);
 
-    import std.traits : hasMember;
-    static if (hasMember!(T, "update") || hasMember!(T, "lateUpdate"))
+    bool active = true;
+    bool visible = true;
+
+    void _initialize()()
     {
-        bool active = true;
-    }
-    static if (hasMember!(T, "draw") || hasMember!(T, "lateDraw"))
-    {
-        bool visible = true;
+        this.broadcast!("initialize", "lateInitialize");
     }
 
-    /// Broadcasts `method` to all fields that define this member function.
-    ///
-    /// First calls `method` on this object, if defined, then in all fields
-    /// from first to last that also define it.
-    ///
-    /// Optionally, broadcast `lateMethod` in the same fashion as `method`,
-    /// but reversing the order: first call it in all fields from last to
-    /// first that defines the function, then call on this object.
-    ///
-    /// Optionally, pass `ifFieldTrue` to check in runtime for this field
-    /// before calling the functions for objects that define it. A falsey
-    /// value makes function not be called.
-    void broadcast(
-        string method,
-        string lateMethod = null,
-        string ifFieldTrue = null,
-        Args...
-    ) (
-        auto ref Args args
-    )
+    void _update()()
     {
-        traverseCallingSelfThenChildren!(method, ifFieldTrue)(this, args);
-        traverseCallingReverseChildrenThenSelf!(lateMethod, ifFieldTrue)(this, args);
+        this.broadcast!("update", "lateUpdate", "active");
     }
 
-    void _initialize()
+    void _draw()()
     {
-        broadcast!("initialize", "lateInitialize");
+        this.broadcast!("draw", "lateDraw", "visible");
     }
 
-    void _update()
-    {
-        broadcast!("update", "lateUpdate", "active");
-    }
-
-    void _draw()
-    {
-        broadcast!("draw", "lateDraw", "visible");
-    }
-
-    void _frame()
+    void _frame()()
     {
         _update();
         _draw();
