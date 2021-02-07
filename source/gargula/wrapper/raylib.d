@@ -103,7 +103,7 @@ enum RAD2DEG = 180.0f / PI;
 
 // Allow custom memory allocators
 
-// NOTE: MSC C++ compiler does not support compound literals (C99 feature)
+// NOTE: MSVC C++ compiler does not support compound literals (C99 feature)
 // Plain structures in C++ (without constructors) can be initialized from { } initializers.
 
 // Some Basic Colors
@@ -654,9 +654,9 @@ enum
     GAMEPAD_BUTTON_RIGHT_TRIGGER_2 = 12,
 
     // These are buttons in the center of the gamepad
-    GAMEPAD_BUTTON_MIDDLE_LEFT = 13, //PS3 Select
-    GAMEPAD_BUTTON_MIDDLE = 14, //PS Button/XBOX Button
-    GAMEPAD_BUTTON_MIDDLE_RIGHT = 15, //PS3 Start
+    GAMEPAD_BUTTON_MIDDLE_LEFT = 13, // PS3 Select
+    GAMEPAD_BUTTON_MIDDLE = 14, // PS Button/XBOX Button
+    GAMEPAD_BUTTON_MIDDLE_RIGHT = 15, // PS3 Start
 
     // These are the joystick press in buttons
     GAMEPAD_BUTTON_LEFT_THUMB = 16,
@@ -868,6 +868,9 @@ enum
 
 // Callbacks to be implemented by users
 alias TraceLogCallback = void function (int logType, const(char)* text, va_list args);
+alias MemAllocCallback = void* function (int size);
+alias MemReallocCallback = void* function (int size);
+alias MemFreeCallback = void function (void* ptr);
 
 // Prevents name mangling of functions
 
@@ -910,8 +913,8 @@ int GetScreenHeight (); // Get current screen height
 int GetMonitorCount (); // Get number of connected monitors
 int GetCurrentMonitor (); // Get current connected monitor
 Vector2 GetMonitorPosition (int monitor); // Get specified monitor position
-int GetMonitorWidth (int monitor); // Get specified monitor width
-int GetMonitorHeight (int monitor); // Get specified monitor height
+int GetMonitorWidth (int monitor); // Get specified monitor width (max available by monitor)
+int GetMonitorHeight (int monitor); // Get specified monitor height (max available by monitor)
 int GetMonitorPhysicalWidth (int monitor); // Get specified monitor physical width in millimetres
 int GetMonitorPhysicalHeight (int monitor); // Get specified monitor physical height in millimetres
 int GetMonitorRefreshRate (int monitor); // Get specified monitor refresh rate
@@ -961,12 +964,15 @@ double GetTime (); // Returns elapsed time in seconds since InitWindow()
 void SetConfigFlags (uint flags); // Setup init configuration flags (view FLAGS)
 
 void SetTraceLogLevel (int logType); // Set the current threshold (minimum) log level
-void SetTraceLogExit (int logType); // Set the exit threshold (minimum) log level
 void SetTraceLogCallback (TraceLogCallback callback); // Set a trace log callback to enable custom logging
 void TraceLog (int logType, const(char)* text, ...); // Show trace log messages (LOG_DEBUG, LOG_INFO, LOG_WARNING, LOG_ERROR)
 
 void* MemAlloc (int size); // Internal memory allocator
 void MemFree (void* ptr); // Internal memory free
+void SetMemAllocCallback (MemAllocCallback callback); // Set custom memory allocator
+void SetMemReallocCallback (MemReallocCallback callback); // Set custom memory reallocator
+void SetMemFreeCallback (MemFreeCallback callback); // Set custom memory free
+
 void TakeScreenshot (const(char)* fileName); // Takes a screenshot of current screen (saved a .png)
 int GetRandomValue (int min, int max); // Returns a random value between min and max (both included)
 
@@ -1027,6 +1033,7 @@ bool IsGamepadButtonUp (int gamepad, int button); // Detect if a gamepad button 
 int GetGamepadButtonPressed (); // Get the last gamepad button pressed
 int GetGamepadAxisCount (int gamepad); // Return gamepad axis count for a gamepad
 float GetGamepadAxisMovement (int gamepad, int axis); // Return axis movement value for a gamepad axis
+int SetGamepadMappings (const(char)* mappings); // Set internal gamepad mappings (SDL_GameControllerDB)
 
 // Input-related functions: mouse
 bool IsMouseButtonPressed (int button); // Detect if a mouse button has been pressed once
@@ -1340,6 +1347,7 @@ void UnloadModelKeepMeshes (Model model); // Unload model (but not meshes) from 
 
 // Mesh loading/unloading functions
 Mesh* LoadMeshes (const(char)* fileName, int* meshCount); // Load meshes from model file
+void UploadMesh (Mesh* mesh); // Upload mesh vertex data to GPU (VRAM)
 void UnloadMesh (Mesh mesh); // Unload mesh from memory (RAM and/or VRAM)
 bool ExportMesh (Mesh mesh, const(char)* fileName); // Export mesh data to file, returns true on success
 
@@ -1372,7 +1380,6 @@ Mesh GenMeshCubicmap (Image cubicmap, Vector3 cubeSize); // Generate cubes-based
 BoundingBox MeshBoundingBox (Mesh mesh); // Compute mesh bounding box limits
 void MeshTangents (Mesh* mesh); // Compute mesh tangents
 void MeshBinormals (Mesh* mesh); // Compute mesh binormals
-void MeshNormalsSmooth (Mesh* mesh); // Smooth (average) vertex normals
 
 // Model drawing functions
 void DrawModel (Model model, Vector3 position, float scale, Color tint); // Draw a model (with texture if set)
