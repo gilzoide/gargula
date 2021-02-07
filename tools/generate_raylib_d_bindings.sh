@@ -5,9 +5,18 @@ project_root="$script_root/.."
 
 raylib_h="$project_root/subprojects/raylib/src/raylib.h"
 raylib_d="$project_root/source/gargula/wrapper/raylib.d"
+raymath_h="$project_root/subprojects/raylib/src/raymath.h"
+raymath_d="$project_root/source/gargula/wrapper/raymath.d"
+rlgl_h="$project_root/subprojects/raylib/src/rlgl.h"
+rlgl_d="$project_root/source/gargula/wrapper/rlgl.d"
+physac_h="$project_root/subprojects/raylib/src/physac.h"
+physac_d="$project_root/source/gargula/wrapper/physac.d"
 
 pushd $project_root
 
+################################################################
+# raylib
+################################################################
 dstep --package gargula.wrapper \
     --skip RL_MALLOC \
     --skip RL_CALLOC \
@@ -60,5 +69,72 @@ s/(enum \w* = )[a-zA-Z_]*\.([a-zA-Z_]*;)/\1\2/
 ')
 
 echo "$colors" | sed -i -E "$sedscript" "$raylib_d"
+
+################################################################
+# raymath
+################################################################
+dstep --package gargula.wrapper \
+    --skip RL_MALLOC \
+    --skip RL_CALLOC \
+    --skip RL_REALLOC \
+    --skip RL_FREE \
+    --skip CLITERAL \
+    "$raymath_h" -o "$raymath_d"
+
+sedscript=$(echo '
+# Import raylib wrapper
+/^(extern \(C\))/i import gargula.wrapper.raylib;
+
+# Add "@nogc nothrow" function attributes
+/^(extern \(C\))/a @nogc nothrow:
+')
+
+sed -i -E "$sedscript" "$raymath_d"
+
+################################################################
+# rlgl
+################################################################
+dstep --package gargula.wrapper \
+    --skip RL_MALLOC \
+    --skip RL_CALLOC \
+    --skip RL_REALLOC \
+    --skip RL_FREE \
+    --skip CLITERAL \
+    "$rlgl_h" -o "$rlgl_d"
+
+sedscript=$(echo '
+# Import raylib wrapper
+/^(extern \(C\))/i import gargula.wrapper.raylib;
+
+# Add "@nogc nothrow" function attributes
+/^(extern \(C\))/a @nogc nothrow:
+
+# Remove enum type names, to use them directly from D code
+s/enum [^;]*$/enum/
+')
+
+sed -i -E "$sedscript" "$rlgl_d"
+
+################################################################
+# Physac
+################################################################
+dstep --package gargula.wrapper \
+    --alias-enum-members=true \
+    --skip PHYSAC_CALLOC \
+    --skip PHYSAC_MALLOC \
+    --skip PHYSAC_FREE \
+    --skip Vector2 \
+    "$physac_h" -o "$physac_d" \
+    -- -D PHYSAC_DEFINE_VECTOR2_TYPE
+
+sedscript=$(echo '
+# Import raylib wrapper
+/^(extern \(C\))/i import gargula.wrapper.raylib;
+
+# Add "@nogc nothrow" function attributes
+/^(extern \(C\))/a @nogc nothrow:
+')
+
+sed -i -E "$sedscript" "$physac_d"
 
 popd
