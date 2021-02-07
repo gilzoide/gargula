@@ -3,6 +3,7 @@ project('raylib-meson', 'c', 'cpp', 'd')
 cc = meson.get_compiler('c')
 dc = meson.get_compiler('d')
 
+c_args = []
 compile_args = []
 link_args = []
 dependencies = []
@@ -99,12 +100,22 @@ sources = files(
   'source/gargula/resource/texture.d',
   'source/gargula/resource/wave.d',
   'source/gargula/savestate.d',
+  'source/gargula/wrapper/physac.d',
   'source/gargula/wrapper/raylib.d',
+  'source/gargula/wrapper/raymath.d',
+  'source/gargula/wrapper/rlgl.d',
+)
+
+physac = static_library('physac',
+  'source/physac_impl.c',
+  c_args: c_args,
+  include_directories: raylib_subproject.include_directories('raylib'),
 )
 
 gargula_dep = declare_dependency(
   sources: sources,
   include_directories: inc_dir,
+  link_with: physac,
   compile_args: compile_args,
   link_args: link_args,
   dependencies: dependencies,

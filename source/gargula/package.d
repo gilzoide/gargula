@@ -9,6 +9,6 @@ public import gargula.node;
 public import gargula.resource;
 public import gargula.savestate : SkipState;
 public import gargula.wrapper.physac;
-public import gargula.wrapper.raymath;
 public import gargula.wrapper.raylib;
+public import gargula.wrapper.raymath;
 public import gargula.wrapper.rlgl;
