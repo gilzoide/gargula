@@ -85,6 +85,7 @@ sources = files(
   'source/gargula/gamenode.d',
   'source/gargula/hotreload.d',
   'source/gargula/log.d',
+  'source/gargula/main.d',
   'source/gargula/memory.d',
   'source/gargula/node.d',
   'source/gargula/package.d',
