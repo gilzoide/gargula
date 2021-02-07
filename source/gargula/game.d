@@ -44,6 +44,8 @@ struct GameConfig
     uint windowFlags = FLAG_VSYNC_HINT;
     /// Whether Audio should be initialized along with Window
     bool initAudio = true;
+    /// Whether Physac should be initialized along with Window
+    bool enablePhysac = true;
     /// Whether FPS should be shown on debug builds
     bool showDebugFPS = true;
     /// Log level to set on debug builds
@@ -231,6 +233,11 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
             {
                 InitAudioDevice();
             }
+            static if (_config.enablePhysac)
+            {
+                import gargula.wrapper.physac : InitPhysics;
+                InitPhysics();
+            }
         }
     }
 
@@ -285,6 +292,11 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         // Destroying all objects should suffice to destroy remaining
         // Flyweight instances, but just to be sure...
         unloadFlyweights();
+        static if (_config.enablePhysac)
+        {
+            import gargula.wrapper.physac : ClosePhysics;
+            ClosePhysics();
+        }
         static if (_config.initAudio)
         {
             CloseAudioDevice();
@@ -344,6 +356,14 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
                     forceUpdate = true;
                 }
             }
+            if (!isPaused || forceUpdate)
+            {
+                static if (_config.enablePhysac)
+                {
+                    import gargula.wrapper.physac : UpdatePhysics;
+                    UpdatePhysics();
+                }
+            }
             foreach (o; rootObjects)
             {
                 if (!isPaused || forceUpdate)
@@ -359,6 +379,11 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
         }
         else
         {
+            static if (_config.enablePhysac)
+            {
+                import gargula.wrapper.physac : UpdatePhysics;
+                UpdatePhysics();
+            }
             foreach (o; rootObjects)
             {
                 o.frame();
