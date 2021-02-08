@@ -60,6 +60,36 @@ struct ShaderNodeTemplate(ShaderOptions[] _options)
         EndShaderMode();
     }
 
+    // Setter properties for default uniform locations
+    @property void mvp(T : Matrix)(const auto ref T value)
+    {
+        shader.setValue(shader.locs[LOC_MATRIX_MVP], value);
+    }
+    @property void projection(T : Matrix)(const auto ref T value)
+    {
+        shader.setValue(shader.locs[LOC_MATRIX_PROJECTION], value);
+    }
+    @property void view(T : Matrix)(const auto ref T value)
+    {
+        shader.setValue(shader.locs[LOC_MATRIX_VIEW], value);
+    }
+    @property void colDiffuse(T : Color)(const auto ref T value)
+    {
+        shader.setValue(shader.locs[LOC_COLOR_DIFFUSE], value);
+    }
+    @property void texture0(T : Texture)(const auto ref T value)
+    {
+        shader.setValue(shader.locs[LOC_MAP_DIFFUSE], value);
+    }
+    @property void texture1(T : Texture)(const auto ref T value)
+    {
+        shader.setValue(shader.locs[LOC_MAP_SPECULAR], value);
+    }
+    @property void texture2(T : Texture)(const auto ref T value)
+    {
+        shader.setValue(shader.locs[LOC_MAP_NORMAL], value);
+    }
+
     // Generate setter properties for uniforms
     static foreach (o; _options)
     {
@@ -139,6 +169,12 @@ void setValue(T : Shader, U)(ref T shader, int uniformLoc, const auto ref U valu
     else static if (is(U : Texture))
     {
         SetShaderValueTexture(shader, uniformLoc, value);
+    }
+    else static if (is(U == Color))
+    {
+        float[4] normalized;
+        normalized = value[] / 255f;
+        SetShaderValue(shader, uniformLoc, normalized.ptr, UNIFORM_VEC4);
     }
     else static if (is(U == float))
     {
