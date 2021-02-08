@@ -46,11 +46,47 @@ dependencies += chipmunk_subproject.dependency('chipmunk_static')
 betterclist = subproject('betterclist')
 bettercmath = subproject('bettercmath')
 flyweightbyid = subproject('flyweightbyid')
+chipmunkd = declare_dependency(
+  sources: files(
+    'subprojects/chipmunkd/src/chipmunk/chipmunk.d',
+    'subprojects/chipmunkd/src/chipmunk/chipmunk_private.d',
+    'subprojects/chipmunkd/src/chipmunk/chipmunk_structs.d',
+    'subprojects/chipmunkd/src/chipmunk/chipmunk_types.d',
+    'subprojects/chipmunkd/src/chipmunk/chipmunk_unsafe.d',
+    'subprojects/chipmunkd/src/chipmunk/cpArbiter.d',
+    'subprojects/chipmunkd/src/chipmunk/cpBB.d',
+    'subprojects/chipmunkd/src/chipmunk/cpBody.d',
+    'subprojects/chipmunkd/src/chipmunk/cpConstraint.d',
+    'subprojects/chipmunkd/src/chipmunk/cpDampedRotarySpring.d',
+    'subprojects/chipmunkd/src/chipmunk/cpDampedSpring.d',
+    'subprojects/chipmunkd/src/chipmunk/cpGearJoint.d',
+    'subprojects/chipmunkd/src/chipmunk/cpGrooveJoint.d',
+    'subprojects/chipmunkd/src/chipmunk/cpHastySpace.d',
+    'subprojects/chipmunkd/src/chipmunk/cpMarch.d',
+    'subprojects/chipmunkd/src/chipmunk/cpPinJoint.d',
+    'subprojects/chipmunkd/src/chipmunk/cpPivotJoint.d',
+    'subprojects/chipmunkd/src/chipmunk/cpPolyline.d',
+    'subprojects/chipmunkd/src/chipmunk/cpPolyShape.d',
+    'subprojects/chipmunkd/src/chipmunk/cpRatchetJoint.d',
+    'subprojects/chipmunkd/src/chipmunk/cpRobust.d',
+    'subprojects/chipmunkd/src/chipmunk/cpRotaryLimitJoint.d',
+    'subprojects/chipmunkd/src/chipmunk/cpShape.d',
+    'subprojects/chipmunkd/src/chipmunk/cpSimpleMotor.d',
+    'subprojects/chipmunkd/src/chipmunk/cpSlideJoint.d',
+    'subprojects/chipmunkd/src/chipmunk/cpSpace.d',
+    'subprojects/chipmunkd/src/chipmunk/cpSpatialIndex.d',
+    'subprojects/chipmunkd/src/chipmunk/cpTransform.d',
+    'subprojects/chipmunkd/src/chipmunk/cpVect.d',
+    'subprojects/chipmunkd/src/chipmunk/package.d',
+  ),
+  include_directories: 'subprojects/chipmunkd/src',
+)
 
 dependencies += [
   betterclist.get_variable('betterclist_dep'),
   bettercmath.get_variable('bettercmath_dep'),
   flyweightbyid.get_variable('flyweightbyid_dep'),
+  chipmunkd,
 ]
 
 # DUB dependency
@@ -61,8 +97,6 @@ if get_option('debug') and host_machine.system() != 'emscripten'
     warning('fswatch not found, hot reloading not supported')
   endif
 endif
-chipmunkd = dependency('chipmunkd', required: true, method: 'dub')
-dependencies += chipmunkd
 
 # General configuration
 if host_machine.system() == 'windows'
