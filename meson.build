@@ -61,10 +61,8 @@ if get_option('debug') and host_machine.system() != 'emscripten'
     warning('fswatch not found, hot reloading not supported')
   endif
 endif
-chupmunkd = declare_dependency(
-  include_directories: include_directories('subprojects/chipmunkd/src'),
-)
-dependencies += chupmunkd
+chipmunkd = dependency('chipmunkd', required: true, method: 'dub')
+dependencies += chipmunkd
 
 # General configuration
 if host_machine.system() == 'windows'
