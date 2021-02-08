@@ -4,6 +4,7 @@ import betterclist;
 import chipmunk;
 
 import gargula.node;
+import gargula.wrapper.raylib;
 
 enum spaceStackSize = 4;
 
@@ -29,6 +30,17 @@ struct Space
     void lateInitialize()
     {
         spaceStack.pop();
+    }
+
+    debug void draw()
+    {
+        import gargula.chipmunk.debugdraw : debugDrawOptions;
+        cpSpaceDebugDraw(space, &debugDrawOptions);
+    }
+
+    void update()
+    {
+        cpSpaceStep(space, 1.0 / 60);
     }
 
     ~this()

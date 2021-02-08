@@ -98,6 +98,7 @@ sources = files(
   'source/gargula/builtin/sprite.d',
   'source/gargula/builtin/tween.d',
   'source/gargula/chipmunk/body.d',
+  'source/gargula/chipmunk/debugdraw.d',
   'source/gargula/chipmunk/package.d',
   'source/gargula/chipmunk/shape.d',
   'source/gargula/chipmunk/space.d',
