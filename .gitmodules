@@ -10,3 +10,9 @@
 [submodule "subprojects/flyweightbyid"]
 	path = subprojects/flyweightbyid
 	url = https://github.com/gilzoide/flyweightbyid.git
+[submodule "subprojects/Chipmunk2D"]
+	path = subprojects/Chipmunk2D
+	url = https://github.com/slembcke/Chipmunk2D.git
+[submodule "subprojects/chipmunkd"]
+	path = subprojects/chipmunkd
+	url = https://github.com/rcorre/chipmunkd.git

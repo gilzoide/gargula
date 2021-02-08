@@ -29,6 +29,19 @@ raylib_opts.append_compile_args('c', '-w')
 raylib_subproject = cmake.subproject('raylib', options: raylib_opts)
 dependencies += raylib_subproject.dependency('raylib')
 
+# Chipmunk configuration
+chipmunk_opts = cmake.subproject_options()
+chipmunk_opts.set_install(false)
+chipmunk_opts.add_cmake_defines({
+  'BUILD_DEMOS': 'OFF',
+  'BUILD_SHARED': 'OFF',
+  'BUILD_STATIC': 'ON',
+  'FORCE_CLANG_BLOCKS': 'OFF',
+})
+chipmunk_opts.append_compile_args('c', '-w')
+chipmunk_subproject = cmake.subproject('Chipmunk2D', options: chipmunk_opts)
+dependencies += chipmunk_subproject.dependency('chipmunk_static')
+
 # D subprojects
 betterclist = subproject('betterclist')
 bettercmath = subproject('bettercmath')
@@ -48,6 +61,10 @@ if get_option('debug') and host_machine.system() != 'emscripten'
     warning('fswatch not found, hot reloading not supported')
   endif
 endif
+chupmunkd = declare_dependency(
+  include_directories: include_directories('subprojects/chipmunkd/src'),
+)
+dependencies += chupmunkd
 
 # General configuration
 if host_machine.system() == 'windows'
