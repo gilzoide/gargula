@@ -42,16 +42,18 @@ private mixin template BodyTemplate(string newCall)
 
     ~this()
     {
-        if (body_)
-        {
-            auto space = cpBodyGetSpace(body_);
-            if (space)
-            {
-                cpSpaceRemoveBody(space, body_);
-            }
-            cpBodyFree(body_);
-        }
-    }
+    //~this()
+    //{
+        //if (body_)
+        //{
+            //auto space = cpBodyGetSpace(body_);
+            //if (space)
+            //{
+                //cpSpaceRemoveBody(space, body_);
+            //}
+            //cpBodyFree(body_);
+        //}
+    //}
 }
 
 struct DynamicBody

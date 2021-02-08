@@ -8,18 +8,6 @@ import gargula.chipmunk.space;
 import gargula.log;
 import gargula.node;
 
-enum bodyStackSize = 4;
-struct Shape
-{
-    @disable this();
-
-    static List!(cpShape*, bodyStackSize) shapeStack;
-    static cpShape* currentShape()
-    {
-        return shapeStack.empty ? null : shapeStack[$-1];
-    }
-}
-
 private mixin template ShapeTemplate(string newCall)
 {
     mixin Node;
@@ -39,60 +27,54 @@ private mixin template ShapeTemplate(string newCall)
         assert(body_, "Trying to create a Shape without a Body!!!");
         mixin("shape = " ~ newCall ~ ";");
         cpSpaceAddShape(space, shape);
-        Shape.shapeStack.push(shape);
     }
 
-    void lateInitialize()
-    {
-        Shape.shapeStack.pop();
-    }
-
-    ~this()
-    {
-        if (shape)
-        {
-            auto space = cpShapeGetSpace(shape);
-            if (space)
-            {
-                cpSpaceRemoveShape(space, shape);
-            }
-            cpShapeFree(shape);
-        }
-    }
+    //~this()
+    //{
+        //if (shape)
+        //{
+            //auto space = cpShapeGetSpace(shape);
+            //if (space)
+            //{
+                //cpSpaceRemoveShape(space, shape);
+            //}
+            //cpShapeFree(shape);
+        //}
+    //}
 }
 
 struct CircleShape
 {
-    mixin ShapeTemplate!"cpCircleShapeNew(body_, radius, offset)";
-
     cpFloat radius = 1;
     cpVect offset = cpvzero;
+
+    mixin ShapeTemplate!"cpCircleShapeNew(body_, radius, offset)";
 }
 
 struct SegmentShape
 {
-    mixin ShapeTemplate!"cpSegmentShapeNew(body_, a, b, radius)";
-
     cpVect a = cpv(0, 0);
     cpVect b = cpv(1, 0);
     cpFloat radius = 1;
+
+    mixin ShapeTemplate!"cpSegmentShapeNew(body_, a, b, radius)";
 }
 
 struct PolygonShape
 {
-    mixin ShapeTemplate!"cpPolyShapeNew(body_, cast(int) verts.length, verts.ptr, transform, radius)";
-
     int numVerts;
     cpVect[] verts;
     cpTransform transform = { 1, 0, 0, 1, 0, 0 };
     cpFloat radius;
+
+    mixin ShapeTemplate!"cpPolyShapeNew(body_, cast(int) verts.length, verts.ptr, transform, radius)";
 }
 
 struct BoxShape
 {
-    mixin ShapeTemplate!"cpBoxShapeNew(body_, width, height, radius)";
-
     cpFloat width = 1;
     cpFloat height = 1;
     cpFloat radius = 1;
+
+    mixin ShapeTemplate!"cpBoxShapeNew(body_, width, height, radius)";
 }
