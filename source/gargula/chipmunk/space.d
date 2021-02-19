@@ -15,6 +15,8 @@ struct Space
     cpSpace* space;
     alias space this;
 
+    double speed = 1;
+
     static List!(cpSpace*, spaceStackSize) spaceStack;
     static cpSpace* currentSpace()
     {
@@ -40,7 +42,7 @@ struct Space
 
     void update()
     {
-        cpSpaceStep(space, 1.0 / 60);
+        cpSpaceStep(space, speed * (1.0 / 60.0));
     }
 
     ~this()
