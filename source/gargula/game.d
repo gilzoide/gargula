@@ -92,6 +92,8 @@ struct GameConfig
     int debugSaveStateKey = KEY_C;
     /// Key that triggers a load game state on debug
     int debugLoadStateKey = KEY_V;
+    /// Key that toggles debug drawing for Chipmunk
+    int debugDrawChipmunk = KEY_D;
     /// Delay to wait before reloading code
     float debugReloadCodeDelay = 0.5;
 
@@ -354,6 +356,11 @@ struct GameTemplate(GameConfig _config = GameConfig.init)
                 if (IsKeyPressed(_config.debugAdvanceFrameKey))
                 {
                     forceUpdate = true;
+                }
+                if (IsKeyPressed(_config.debugDrawChipmunk))
+                {
+                    import gargula.chipmunk.space : Space;
+                    Space.debugDrawEnabled = !Space.debugDrawEnabled;
                 }
             }
             if (!isPaused || forceUpdate)

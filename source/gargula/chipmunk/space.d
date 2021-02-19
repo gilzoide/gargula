@@ -34,10 +34,17 @@ struct Space
         spaceStack.pop();
     }
 
-    debug void draw()
+    debug
     {
-        import gargula.chipmunk.debugdraw : debugDrawOptions;
-        cpSpaceDebugDraw(space, &debugDrawOptions);
+        static bool debugDrawEnabled = false;
+        void draw()
+        {
+            if (debugDrawEnabled)
+            {
+                import gargula.chipmunk.debugdraw : debugDrawOptions;
+                cpSpaceDebugDraw(space, &debugDrawOptions);
+            }
+        }
     }
 
     void update()
